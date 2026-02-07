@@ -7,4 +7,5 @@ Current work includes:
 - Visualizing beats across different channels (e.g. MLII, V5)
 - Examining class distributions and preparing the data for potential machine learning experiments
 
-![ECG example](media/img.png)
+![ECG example](media/plt1.png)
+
