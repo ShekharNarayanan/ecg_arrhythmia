@@ -1,0 +1,14 @@
+[project]
+name = "arrhythmia-ml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "neurokit2>=0.2.12",
+    "numpy>=2.4.2",
+    "pandas>=3.0.0",
+    "scipy>=1.17.0",
+    "wfdb>=4.3.1",
+]

@@ -1,2 +1,66 @@
-mit-bih-arrhythmia-database-1.0.0
-.venv
+# --------------------
+# Python / tooling
+# --------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+.env/
+
+# Python version managers
+.python-version
+
+# --------------------
+# Jupyter
+# --------------------
+.ipynb_checkpoints/
+
+# --------------------
+# Data (DO NOT COMMIT RAW DATA)
+# --------------------
+data/raw/
+data/processed/
+
+# Allow empty dirs to exist
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# --------------------
+# Media / generated outputs
+# --------------------
+media/generated
+
+# --------------------
+# Logs & temp files
+# --------------------
+*.log
+*.tmp
+*.bak
+
+# --------------------
+# OS / editor junk
+# --------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --------------------
+# UV / dependency management
+# --------------------
+uv.lock
+
+# --------------------
+# Tests / coverage
+# --------------------
+.coverage
+htmlcov/
+.pytest_cache/
