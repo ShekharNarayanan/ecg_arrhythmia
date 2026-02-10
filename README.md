@@ -17,7 +17,7 @@ Current work includes:
 
 
 ### Literature used:
-- [1]  (Rahul Kher (2019) Signal Processing Techniques for Removing Noise from ECG Signals. J Biomed Eng 1: 1-9)[https://www.jscholaronline.org/articles/JBER/Signal-Processing.pdf]
+- [Rahul Kher (2019) Signal Processing Techniques for Removing Noise from ECG Signals. J Biomed Eng 1: 1-9](https://www.jscholaronline.org/articles/JBER/Signal-Processing.pdf)
 
 
 ## Feature Engineering
@@ -34,3 +34,4 @@ Current work includes:
 - [ ]
 - [ ]
 - [ ]
+
