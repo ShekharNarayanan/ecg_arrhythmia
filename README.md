@@ -7,30 +7,30 @@ Current work includes:
 - Visualizing beats across different channels (e.g. MLII, V5)
 - Examining class distributions and preparing the data for potential machine learning experiments
 
-![ECG example](media/plt1.png)
+![ECG example](media/readme/plt1.png)
 
 
 ## Preprocessing
-[ ]
-[ ]
-[ ]
+- [ ]
+- [ ]
+- [ ]
 
 
 ### Literature used:
-[1]  (Rahul Kher (2019) Signal Processing Techniques for Removing Noise from ECG Signals. J Biomed Eng 1: 1-9)[https://www.jscholaronline.org/articles/JBER/Signal-Processing.pdf]
+- [1]  (Rahul Kher (2019) Signal Processing Techniques for Removing Noise from ECG Signals. J Biomed Eng 1: 1-9)[https://www.jscholaronline.org/articles/JBER/Signal-Processing.pdf]
 
 
 ## Feature Engineering
-[ ]
-[ ]
-[ ]
+- [ ]
+- [ ]
+- [ ]
 
 ## Data Analysis and Machine Learning
-[ ]
-[ ]
-[ ]
+- [ ]
+- [ ]
+- [ ]
 
 ## Data app to view results
-[ ]
-[ ]
-[ ]
+- [ ]
+- [ ]
+- [ ]
