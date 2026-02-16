@@ -11,10 +11,10 @@ Current work includes:
 
 
 ## Preprocessing
-- [x] 0.5 - 30 Hz Filtering
-- [x] Notch filtering
-- [x] Detrend and baseline correction
-- [x] R-peak Detection
+- [x] ~~0.5 - 30 Hz Filtering~~
+- [x] ~~Notch filtering~~
+- [x] ~~Detrend and baseline correction~~
+- [x] ~~R-peak Detection~~
 
 
 ### Literature used:
@@ -23,17 +23,18 @@ Current work includes:
 
 
 ## Feature Engineering
-- [ ]
-- [ ]
-- [ ]
+- []
+- []
+- []
 
 ## Data Analysis and Machine Learning
-- [ ]
-- [ ]
-- [ ]
+- []
+- []
+- []
 
 ## Data app to view results
-- [ ]
-- [ ]
-- [ ]
+- []
+- []
+- []
+
 
