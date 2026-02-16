@@ -7,17 +7,19 @@ Current work includes:
 - Visualizing beats across different channels (e.g. MLII, V5)
 - Examining class distributions and preparing the data for potential machine learning experiments
 
-![ECG example](media/readme/plt1.png)
+![ECG example](media/readme/raw_vs_filtered.png)
 
 
 ## Preprocessing
-- [ ]
-- [ ]
-- [ ]
+- [x] 0.5 - 30 Hz Filtering
+- [x] Notch filtering
+- [x] Detrend and baseline correction
+- [x] R-peak Detection
 
 
 ### Literature used:
 - [Rahul Kher (2019) Signal Processing Techniques for Removing Noise from ECG Signals. J Biomed Eng 1: 1-9](https://www.jscholaronline.org/articles/JBER/Signal-Processing.pdf)
+- https://martager.github.io/bbsig/ecg-preprocessing/
 
 
 ## Feature Engineering
