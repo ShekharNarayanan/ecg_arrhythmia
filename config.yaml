@@ -1,3 +1,2 @@
-# config file 
-
-data_path : r'C:\Users\narayana\projects\personal\arrhythmia_ml\data\raw_input_data'
+# config file
+raw_data_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\raw'
