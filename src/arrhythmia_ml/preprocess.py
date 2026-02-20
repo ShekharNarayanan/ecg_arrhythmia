@@ -1,10 +1,16 @@
-# preprocessing script for the project
+# * -  preprocessing script for the project - *
 import numpy as np
 import neurokit2 as nk
 
 
-def bandpass_1d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) -> np.ndarray:
+def bandpass_1d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) -> np.ndarray:    
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     assert signal.ndim == 1, "Expected 1D signal array"
+
 
     y = nk.signal_filter(
         signal,
@@ -16,6 +22,17 @@ def bandpass_1d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) 
 
 
 def bandpass_2d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) -> np.ndarray:
+    """_summary_
+
+    Args:
+        signal (np.ndarray): _description_
+        fs (int): _description_
+        low (float, optional): _description_. Defaults to 0.5.
+        high (float, optional): _description_. Defaults to 30.0.
+
+    Returns:
+        np.ndarray: _description_
+    """
 
     signal = np.asarray(signal)
     assert signal.ndim == 2, f"Expected 2D signal array, got {signal.ndim}D"
@@ -28,7 +45,17 @@ def bandpass_2d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) 
     return out
 
 
-def notch_filter_1d(signal: np.ndarray, fs: int, freq: float = 30.0) -> np.ndarray:
+def notch_filter_1d(signal: np.ndarray, fs: int, freq: int = 50) -> np.ndarray:
+    """_summary_
+
+    Args:
+        signal (np.ndarray): _description_
+        fs (int): _description_
+        freq (int, optional): _description_. Defaults to 50.
+
+    Returns:
+        np.ndarray: _description_
+    """
     assert signal.ndim == 1, "Expected 1D signal array"
 
     y = nk.signal_filter(
@@ -39,7 +66,17 @@ def notch_filter_1d(signal: np.ndarray, fs: int, freq: float = 30.0) -> np.ndarr
     )
     return np.asarray(y, dtype=np.float32)
 
-def notch_filter_2d(signal: np.ndarray, fs: int, freq: float = 30.0) -> np.ndarray:
+def notch_filter_2d(signal: np.ndarray, fs: int, freq: int = 50) -> np.ndarray:
+    """_summary_
+
+    Args:
+        signal (np.ndarray): _description_
+        fs (int): _description_
+        freq (int, optional): _description_. Defaults to 50.
+
+    Returns:
+        np.ndarray: _description_
+    """
 
     signal = np.asarray(signal)
     assert signal.ndim == 2, f"Expected 2D signal array, got {signal.ndim}D"
@@ -53,6 +90,16 @@ def notch_filter_2d(signal: np.ndarray, fs: int, freq: float = 30.0) -> np.ndarr
 
 
 def detrend_baseline_correct_1d(signal: np.ndarray, duration: float, fs: int) -> np.ndarray:
+    """_summary_
+
+    Args:
+        signal (np.ndarray): _description_
+        duration (float): _description_
+        fs (int): _description_
+
+    Returns:
+        np.ndarray: _description_
+    """
 
     signal = np.asarray(signal)
     assert signal.ndim == 1, f"Expected 1D signal array, got {signal.ndim}D"
@@ -67,6 +114,16 @@ def detrend_baseline_correct_1d(signal: np.ndarray, duration: float, fs: int) ->
     return signal_corrected.astype(np.float32)
 
 def detrend_baseline_correct_2d(signal: np.ndarray, duration: float, fs: int) -> np.ndarray:
+    """_summary_
+
+    Args:
+        signal (np.ndarray): _description_
+        duration (float): _description_
+        fs (int): _description_
+
+    Returns:
+        np.ndarray: _description_
+    """
 
     signal = np.asarray(signal)
     assert signal.ndim == 2, f"Expected 2D signal array, got {signal.ndim}D"
