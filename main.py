@@ -37,13 +37,15 @@ def main():
     refined_r_peaks = beats.calibrate_r_peaks(bpf_notch_signal, extracted_r_peaks, fs=fs, search_radius_ms=80.0)
 
     # TODO: VALIDATE EXTRACTED R PEAKS USING ANNOTATED ONES
-
         
 
 
+
     # PLOT RAW AND FILTERED SIGNALS
-    plt.figure(figsize=(12, 6))
-    plt.subplot(2, 1, 1)
+    fig, axes = plt.subplots(2, 1, figsize=(14, 7), sharex=True)
+
+    # --- Top subplot ---
+    plt.sca(axes[0])
     plots.plot_ecg_segment(
         signal=raw_sig,
         fs=fs,
@@ -63,11 +65,13 @@ def main():
         show_annotations=False,
     )
 
-    plt.ylabel("Amplitude")
-    plt.title("ECG 0–5s: raw vs filtered") 
-    plt.legend()
+    axes[0].set_ylabel("Amplitude")
+    axes[0].set_title("ECG 0–5s: raw vs filtered", pad=12)
+    axes[0].legend(loc="upper right")
+    axes[0].grid(alpha=0.25)
 
-    plt.subplot(2, 1, 2)
+    # --- Bottom subplot ---
+    plt.sca(axes[1])
     plots.plot_ecg_segment(
         signal=bpf_notch_signal,  # offset for visibility
         fs=fs,
@@ -77,10 +81,14 @@ def main():
         label=f"filtered {channels[chan_to_plot]}",
         show_annotations=True,
     )
-    plt.ylabel("Amplitude")
-    plt.title("ECG 0–5s: filtered signal with R peaks\n")   
-    plt.xlabel("Time (s)")
-    plt.legend(loc="upper right")
+
+    axes[1].set_ylabel("Amplitude")
+    axes[1].set_title("ECG 0–5s: filtered signal with R peaks", pad=12)
+    axes[1].set_xlabel("Time (s)")
+    axes[1].legend(loc="upper right")
+    axes[1].grid(alpha=0.25)
+
+    fig.tight_layout()
     plt.show()
 
 
