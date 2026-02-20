@@ -6,16 +6,16 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 ![ECG example](media/readme/filtered_and_peaks.png)
 
 ## Current stage:
-    -[ ] **Validate detected peaks with annotations as ground truth**
+- [ ] **Validate detected peaks with annotations as ground truth**
 
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
 - [x] Notch filtering
 - [x] Detrend and baseline correction
 - [x] R-peak Detection
-    -[x] Write modules for Pam-Tompson QRS complex detection
-    -[x] Calibrate peaks after detection
-    -[ ] **Validate detected peaks with annotations as ground truth**
+    - [x] Write modules for Pam-Tompson QRS complex detection
+    - [x] Calibrate peaks after detection
+    - [ ] **Validate detected peaks with annotations as ground truth**
 
 
 ### Literature used:
@@ -24,19 +24,20 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 
 
 ## Feature Engineering
-- []
-- []
-- []
+- [ ]
+- [ ]
+- [ ]
 
 ## Data Analysis and Machine Learning
-- []
-- []
-- []
+- [ ]
+- [ ]
+- [ ]
 
 ## Data app to view results
-- []
-- []
-- []
+- [ ]
+- [ ]
+- [ ]
+
 
 
 
