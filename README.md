@@ -5,8 +5,8 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 
 ![ECG example](media/readme/filtered_and_peaks.png)
 
-## Current stage:
-- [ ] **Validate detected peaks with annotations as ground truth**
+## Current stage => **Feature engineering**:
+- [ ] **Extract R peaks and build table with labels from annotations**
 
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
@@ -15,7 +15,7 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 - [x] R-peak Detection
     - [x] Write modules for Pam-Tompson QRS complex detection
     - [x] Calibrate peaks after detection
-    - [ ] **Validate detected peaks with annotations as ground truth**
+    - [x] Validate detected peaks with annotations as ground truth
 
 
 ### Literature used:
@@ -23,8 +23,8 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 - https://martager.github.io/bbsig/ecg-preprocessing/
 
 
-## Feature Engineering
-- [ ]
+## Feature Extraction and Engineering
+- [ ] **Extract R peaks and build table with labels from annotations**
 - [ ]
 - [ ]
 
