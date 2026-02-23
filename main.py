@@ -23,7 +23,7 @@ def main():
     print(f"Beat types: {set(labels)}")
 
     # DECIDE WHICH CHANNEL TO PLOT
-    chan_to_plot = 0  # MLII lead
+    chan_to_plot = 1  # MLII lead
     raw_sig = signal[:, chan_to_plot]
 
     # BANDPASS AND NOTCH FILTERING
@@ -34,12 +34,18 @@ def main():
     extracted_r_peaks = beats.extract_r_peaks(bpf_notch_signal, fs=fs)
 
     # CALIBRATE R PEAKS
-    refined_r_peaks = beats.calibrate_r_peaks(bpf_notch_signal, extracted_r_peaks, fs=fs, search_radius_ms=80.0)
+    refined_r_peaks = beats.calibrate_r_peaks(
+        bpf_notch_signal, extracted_r_peaks, fs=fs, search_radius_ms=80.0
+    )
 
-    # TODO: VALIDATE EXTRACTED R PEAKS USING ANNOTATED ONES
-        
-
-
+    # VALIDATE EXTRACTED R PEAKS WITH ANNOTATED ONES
+    tolerance_ms = 30.0
+    true_pos, false_pos, false_neg = beats.validate_detected_peaks(
+        annotated=r_peaks, detected=refined_r_peaks, fs=fs, tol_ms=tolerance_ms
+    )
+    # COMPUTE RECALL AND PRECISION
+    recall = true_pos / (true_pos + false_neg) if (true_pos + false_neg) > 0 else 0.0
+    precision = true_pos / (true_pos + false_pos) if (true_pos + false_pos) > 0 else 0.0
 
     # PLOT RAW AND FILTERED SIGNALS
     fig, axes = plt.subplots(2, 1, figsize=(14, 7), sharex=True)
@@ -56,7 +62,7 @@ def main():
         show_annotations=False,
     )
     plots.plot_ecg_segment(
-        signal=bpf_notch_signal,  # offset for visibility
+        signal=bpf_notch_signal,  
         fs=fs,
         start_s=0,
         duration_s=5,
@@ -77,20 +83,22 @@ def main():
         fs=fs,
         start_s=0,
         duration_s=5,
-        r_peaks=r_peaks,
+        r_peaks=refined_r_peaks,
         label=f"filtered {channels[chan_to_plot]}",
         show_annotations=True,
     )
 
     axes[1].set_ylabel("Amplitude")
-    axes[1].set_title("ECG 0–5s: filtered signal with R peaks", pad=12)
+    axes[1].set_title(
+        f"ECG 0–5s: filtered signal with detected R peaks\nValidation-Precision:{precision:.3f}, Recall:{recall:.3f}",
+        pad=12,
+    )
     axes[1].set_xlabel("Time (s)")
     axes[1].legend(loc="upper right")
     axes[1].grid(alpha=0.25)
 
     fig.tight_layout()
     plt.show()
-
 
 
 if __name__ == "__main__":
