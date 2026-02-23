@@ -15,7 +15,7 @@ test_id = participant_ids[0]
 X_all = []
 y_all = []
 
-for pid in participant_ids[:20]:  # start with 10
+for pid in participant_ids:  # start with 10
     signal, fs, channels, r_peaks, labels = file_utils.load_raw_participant_data(
         raw_data_path=raw_data_path, participant_id=pid
     )
