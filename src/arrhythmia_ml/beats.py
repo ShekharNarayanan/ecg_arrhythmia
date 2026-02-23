@@ -128,5 +128,66 @@ def calibrate_r_peaks(
     return np.array(refined_peaks, dtype=int)
 
 
-def validate_detected_peaks():
-    pass
+def validate_detected_peaks(annotated:np.ndarray, detected:np.ndarray, fs:int, tol_ms:float=30) -> tuple[int,int,int]:
+    """_summary_
+
+    Args:
+        annotated (np.ndarray): _description_
+        detected (np.ndarray): _description_
+        tol (int): tolerance for detection in samples
+
+    Returns:
+        tuple[int,int,int]: _description_
+    """
+    # main thing to focus on is to find the correct index from annotated to compare the detected peak to.
+    # TRUE POSITIVES: Detected peaks that match with annotated peaks within tolerance
+    # FALSE POSITIVES: Detected peaks that do not match annotated peaks within tolerance
+    # FALSE NEGATIVES: Detected peaks that were entirely missed and had no matches with annotated peaks
+   
+    # sort and assure data types
+    annotated = np.sort(np.asarray(annotated))
+    detected = np.sort(np.asarray(detected))
+
+    matches = [] # annotated peaks that match detected peaks within the tolerance limit
+    incorrect = [] # tolerance does not match
+    missed = np.zeros((len(annotated),), dtype=bool) # values from annotated peaks that do not correspond to any detected peaks (missed detections)
+    
+    # convert tolerance in ms to samples
+    tol_samples = int(np.ceil(tol_ms * fs))
+    # loop thru detected peaks
+    for det_peak in detected:
+        idx = np.searchsorted(annotated,det_peak) # find the insertion index of the detected peak
+
+        # edge cases
+        if idx == 0:
+            # compare with the index 0 of the annotated peaks
+            cand_idx = 0
+
+        elif idx == len(annotated):
+            # compare with the the last value of the annotated dataset
+            cand_idx = len(annotated) - 1
+
+        else:
+            left = idx - 1
+            right = idx
+            cand_idx = left if abs(det_peak - annotated[left]) <= abs(det_peak - annotated[right]) else right # select cand_idx based on distance from either indices
+
+        # fetch the annotated peak index for the candidate index and then check for tolerance
+        nearest_annotated = annotated[cand_idx]
+
+        # tolerance check + do not reuse annotated peak values
+        if abs(nearest_annotated - det_peak) < tol_samples and not missed[cand_idx]:
+            matches.append((det_peak,nearest_annotated))
+            missed[cand_idx] = True
+        else:
+            incorrect.append(det_peak)
+
+    # assign output 
+    true_pos = len(matches)
+    false_pos = len(incorrect)
+    false_neg = len(missed[~missed])
+
+    return true_pos, false_pos, false_neg
+
+
+
