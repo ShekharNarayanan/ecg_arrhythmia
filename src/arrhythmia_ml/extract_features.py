@@ -49,22 +49,36 @@ def extract_waveforms(
 
         # check if padding is needed (see if we get a non zero value for either of these vars)
         if pad_left or pad_right:
-            X[i_beat, :] = ecg_segment
+            ecg_segment = np.pad(ecg_segment, (pad_left, pad_right), mode="constant")
+        
+        X[i_beat,:] = ecg_segment
 
     return X
 
 
-def return_training_data_for_participant(
+def return_commbined_feature_matrix(
     ecg_signal: np.ndarray,
     peaks: np.ndarray,
-    labels: list,
     fs: int,
     window_start_ms: float,
     window_end_ms: float,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> np.ndarray:
+    """Combines all extracted features and returns them as output.
+
+    Args:
+        ecg_signal (np.ndarray): _description_
+        peaks (np.ndarray): _description_
+        labels (list): _description_
+        fs (int): _description_
+        window_start_ms (float): _description_
+        window_end_ms (float): _description_
+
+    Returns:
+        tuple[np.ndarray, np.ndarray]: _description_
+    """
 
     # get all extracted waveforms for participant
-    X = extract_waveforms(
+    X_waves = extract_waveforms(
         ecg_signal=ecg_signal,
         peaks=peaks,
         window_start_ms=window_start_ms,
@@ -74,10 +88,6 @@ def return_training_data_for_participant(
 
     # possibility to add more features to X
 
-    assert len(labels) == X.shape[0], (
-        f"Number of beats and beat labels do not match.\nNum labels:{len(labels)}, Num beats: {X.shape[0]}"
-    )
 
-    y = np.array(labels)
 
-    return X,y
+    return X_waves
