@@ -50,7 +50,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # model
 clf = Pipeline([
     ("scaler", StandardScaler()),
-    ("lr", LogisticRegression(max_iter=2000, class_weight="balanced", verbose=True),
+    ("lr", LogisticRegression(max_iter=2000, class_weight="balanced", verbose=True, solver="saga"),
     )
 ])
 

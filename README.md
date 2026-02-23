@@ -7,8 +7,9 @@ Setup and usage instructions coming soon
 
 ![ECG example](media/readme/filtered_and_peaks.png)
 
-## Current stage => **Feature engineering**:
+## Current stage => **Feature engineering/ Machine Learning**:
 - [ ] **Extract R peak waveforms and other key features**
+- [ ] **Deal with massive class imbalance**
 
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
@@ -26,15 +27,15 @@ Setup and usage instructions coming soon
 
 
 ## Feature Extraction and Engineering
-- [ ] **Extract R peak waveforms and other key features**
-- [ ] **Build table with labels from annotations**
-- [ ]
+- [x] **Extract R peak waveforms and other key features**
+- [x] **Build table with labels from annotations**
+- [ ] **Extract RR and morphology features**
 
 ### Literature used:
 - https://inass.org/wp-content/uploads/2022/12/2023043016-2.pdf
 
 ## Data Analysis and Machine Learning
-- [ ]
+- [ ] **Deal with massive class imbalance**
 - [ ]
 - [ ]
 
