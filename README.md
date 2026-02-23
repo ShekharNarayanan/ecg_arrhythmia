@@ -2,11 +2,13 @@
 
 This project focuses on **exploring/analyzing ECG data** with literature-backed methods with the **[MIT-BIH Arrhythmia Database (PhysioNet)](https://physionet.org/content/mitdb/1.0.0/)**. There is also focus on making these scripts more production ready in terms of how other teams can use the code developed. 
 
+Setup and usage instructions coming soon
+
 
 ![ECG example](media/readme/filtered_and_peaks.png)
 
 ## Current stage => **Feature engineering**:
-- [ ] **Extract R peaks and build table with labels from annotations**
+- [ ] **Extract R peak waveforms and other key features**
 
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
@@ -24,9 +26,12 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 
 
 ## Feature Extraction and Engineering
-- [ ] **Extract R peaks and build table with labels from annotations**
+- [ ] **Extract R peak waveforms and other key features**
+- [ ] **Build table with labels from annotations**
 - [ ]
-- [ ]
+
+### Literature used:
+- https://inass.org/wp-content/uploads/2022/12/2023043016-2.pdf
 
 ## Data Analysis and Machine Learning
 - [ ]

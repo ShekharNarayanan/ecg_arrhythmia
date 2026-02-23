@@ -24,10 +24,11 @@ venv/
 .ipynb_checkpoints/
 
 # --------------------
-# Data (DO NOT COMMIT RAW DATA)
+# Data / other folders
 # --------------------
 data/raw/
 data/processed/
+literature
 
 # Allow empty dirs to exist
 !data/raw/.gitkeep
