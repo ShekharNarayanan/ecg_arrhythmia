@@ -1,2 +1,27 @@
 # config file
+
+# paths
 raw_data_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\raw'
+models_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\models'
+features_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\features'
+
+# specific model and feature paths
+waves_model: 'C:\Users\narayana\projects\personal\arrhythmia_ml\models\Xwaves_logreg_patientwise_nav.joblib'
+waves_model_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\features\Xwaves_patientwise_nav_features.joblib'
+
+# params
+# general filtering
+general_bandpass: [0.5, 30.0]
+notch: 50
+
+
+# beats
+beats_bandpass: [1, 15]
+peak_calibration: 80 # 80 ms window for calibrating detected peaks with annotated data
+
+# feature extraction
+wfm_extraction_window: [-200,400] # 200ms before peak and 400ms after peak
+
+# model training
+max_iter: 2000
+
