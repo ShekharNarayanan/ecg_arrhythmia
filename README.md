@@ -2,14 +2,14 @@
 
 This project focuses on **exploring/analyzing ECG data** with literature-backed methods with the **[MIT-BIH Arrhythmia Database (PhysioNet)](https://physionet.org/content/mitdb/1.0.0/)**. There is also focus on making these scripts more production ready in terms of how other teams can use the code developed. 
 
-Setup and usage instructions coming soon
+P.S: Setup and usage instructions coming soon
+
+## Current stage => [Feature engineering / Machine Learning](#data-analysis-and-machine-learning):
+![ECG example](media/readme/confusion_matrix_Xwaves.png)
+
+Current insight: Got a baseline for beat classification (logistic regression) using only 'N', 'A' and 'V' beat types. Just using the R waveforms returns subpar performance. Time to add more features 😁
 
 
-![ECG example](media/readme/filtered_and_peaks.png)
-
-## Current stage => **Feature engineering/ Machine Learning**:
-- [ ] **Extract R peak waveforms and other key features**
-- [ ] **Deal with massive class imbalance**
 
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
@@ -35,8 +35,8 @@ Setup and usage instructions coming soon
 - https://inass.org/wp-content/uploads/2022/12/2023043016-2.pdf
 
 ## Data Analysis and Machine Learning
+- [x] **Use logistic regression only with R waveforms for base performance**
 - [ ] **Deal with massive class imbalance**
-- [ ]
 - [ ]
 
 ## Data app to view results

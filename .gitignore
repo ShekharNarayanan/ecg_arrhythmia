@@ -29,6 +29,8 @@ venv/
 data/raw/
 data/processed/
 literature
+models
+features
 
 # Allow empty dirs to exist
 !data/raw/.gitkeep
