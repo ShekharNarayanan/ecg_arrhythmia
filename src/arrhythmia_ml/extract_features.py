@@ -199,8 +199,9 @@ def return_commbined_feature_matrix(
     fs: int,
     window_start_ms: float,
     window_end_ms: float,
-    local_rr_beat_window: int,
-) -> tuple[np.ndarray, ...]:
+    local_rr_beat_window: int=5,
+    compute_only: list[str] | None = None
+) -> tuple[np.ndarray | None, ...]:
     """Combines all extracted features and returns them as output.
 
     Args:
@@ -212,21 +213,30 @@ def return_commbined_feature_matrix(
         window_end_ms (float): _description_
 
     Returns:
-        tuple[np.ndarray, np.ndarray]: _description_
+        tuple[np.ndarray | None, np.ndarray | None]: _description_
     """
+    if compute_only is None:
+        compute_only = ["waves","interval_related"]
 
-    # get all extracted waveforms for participant
-    X_waves = extract_waveforms(
-        ecg_signal=ecg_signal,
-        r_peaks=r_peaks,
-        window_start_ms=window_start_ms,
-        window_end_ms=window_end_ms,
-        fs=fs,
-    )
+    
+    if "waves" in compute_only:
+        # get all extracted waveforms for participant
+        X_waves = extract_waveforms(
+            ecg_signal=ecg_signal,
+            r_peaks=r_peaks,
+            window_start_ms=window_start_ms,
+            window_end_ms=window_end_ms,
+            fs=fs,
+        )
+    else:
+        X_waves = None
 
-    # get r_peak interval related features and corresponding feature vector
-    rr_dict = extract_all_rr_features(r_peaks=r_peaks,local_rr_mean_beat_window=local_rr_beat_window)
-    X_rr = np.column_stack(list(rr_dict.values()))
+    if "interval_related" in compute_only:
+        # get r_peak interval related features and corresponding feature vector
+        rr_dict = extract_all_rr_features(r_peaks=r_peaks,local_rr_mean_beat_window=local_rr_beat_window)
+        X_rr = np.column_stack(list(rr_dict.values()))
+    else:
+        X_rr = None
     
 
     return X_waves, X_rr
