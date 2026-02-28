@@ -33,7 +33,7 @@ for pid in participant_ids:
     )
 
     X_waveforms = extract_features.return_commbined_feature_matrix(
-        ecg_signal=sig, peaks=r_peaks, fs=fs, window_start_ms=wave_extraction_window[0], window_end_ms=wave_extraction_window[1]
+        ecg_signal=sig, r_peaks=r_peaks, fs=fs, window_start_ms=wave_extraction_window[0], window_end_ms=wave_extraction_window[1]
     )
 
     y_pid = np.array(labels)
