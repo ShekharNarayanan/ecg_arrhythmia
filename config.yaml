@@ -14,13 +14,16 @@ waves_model_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\feature
 general_bandpass: [0.5, 30.0]
 notch: 50
 
-
-# beats
+# beats extraction
 beats_bandpass: [1, 15]
 peak_calibration: 80 # 80 ms window for calibrating detected peaks with annotated data
 
-# feature extraction
+# feature extraction waveform
 wfm_extraction_window: [-200,400] # 200ms before peak and 400ms after peak
+
+# RR features
+local_rr_mean_beat_window = 5
+
 
 # model training
 max_iter: 2000
