@@ -2,7 +2,8 @@ from arrhythmia_ml import file_utils, preprocess, extract_features
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.utils.class_weight import compute_sample_weight
 import numpy as np
 import joblib
 
@@ -14,11 +15,12 @@ models_path, features_path = config["models_path"], config["features_path"]
 bandpass_window = config["general_bandpass"]
 wave_extraction_window = config["wfm_extraction_window"]
 max_training_iter = config["max_iter"]
-compute_only = ["waves"]
+local_rr_mean_beat_window = config["local_rr_mean_beat_window"]
+compute_only = ["waves", "interval_related"]
 
 participant_ids = file_utils.get_participant_ids(raw_data_path=raw_data_path)
 
-X_all, y_all, g_all = [], [], []
+X_wfms_all, X_rr_all, y_all, g_all = [], [], [], []
 
 for pid in participant_ids:
     signal, fs, channels, r_peaks, labels = file_utils.load_raw_participant_data(
@@ -28,23 +30,36 @@ for pid in participant_ids:
     chan = 0
     raw_sig = signal[:, chan]
     sig = preprocess.notch_filter_1d(
-        preprocess.bandpass_1d(raw_sig, fs=fs, low=bandpass_window[0], high=bandpass_window[1]),
+        preprocess.bandpass_1d(
+            raw_sig, fs=fs, low=bandpass_window[0], high=bandpass_window[1]
+        ),
         fs=fs,
         freq=50,
     )
 
-    X_waveforms = extract_features.return_commbined_feature_matrix(
-        ecg_signal=sig, r_peaks=r_peaks, fs=fs, window_start_ms=wave_extraction_window[0], window_end_ms=wave_extraction_window[1], compute_only=compute_only
+    X_wfm_pid, X_rr_pid = extract_features.return_commbined_feature_matrix(
+        ecg_signal=sig,
+        r_peaks=r_peaks,
+        fs=fs,
+        window_start_ms=wave_extraction_window[0],
+        window_end_ms=wave_extraction_window[1],
+        local_rr_beat_window=local_rr_mean_beat_window,
+        compute_only = compute_only
     )
 
     y_pid = np.array(labels)
     g_pid = np.full(shape=(len(y_pid),), fill_value=pid, dtype=object)
 
-    X_all.append(X_waveforms)
+    X_wfms_all.append(X_wfm_pid)
+    X_rr_all.append(X_rr_pid)
+
     y_all.append(y_pid)
     g_all.append(g_pid)
 
-X = np.vstack(X_all)
+X_wfm = np.vstack(X_wfms_all)
+X_rr = np.vstack(X_rr_all)
+
+X = np.hstack((X_wfm, X_rr))
 y = np.concatenate(y_all)
 groups = np.concatenate(g_all)
 
@@ -61,15 +76,21 @@ X_train, X_test = X[train_idx], X[test_idx]
 y_train, y_test = y[train_idx], y[test_idx]
 
 print("Starting training")
+
+sample_weights = compute_sample_weight("balanced", y_train)
+
 clf = Pipeline([
     ("scaler", StandardScaler()),
-    ("lr", LogisticRegression(max_iter=max_training_iter, class_weight="balanced", solver="saga")),
+    ("gb", GradientBoostingClassifier(
+        n_estimators=100,
+        verbose=1,
+    )),
 ])
 
-clf.fit(X_train, y_train)
+clf.fit(X_train, y_train, gb__sample_weight=sample_weights)
 y_pred = clf.predict(X_test)
 print("Finished training")
-joblib.dump(clf, f"{models_path}/Xwaves_logreg_patientwise_nav.joblib")
+joblib.dump(clf, f"{models_path}/Xwaves_Xrr_gboost_patientwise_nav.joblib")
 joblib.dump(
     {
         "X_train": X_train,
@@ -77,10 +98,7 @@ joblib.dump(
         "y_train": y_train,
         "y_test": y_test,
     },
-    f"{features_path}/Xwaves_patientwise_nav_features.joblib",
+    f"{features_path}/Xwaves_Xrr_gboost_patientwise_nav_features.joblib",
 )
 
 print("models and features saved")
-
-
-
