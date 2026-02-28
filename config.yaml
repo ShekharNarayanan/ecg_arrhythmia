@@ -6,8 +6,17 @@ models_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\models'
 features_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\features'
 
 # specific model and feature paths
+
+# waves only
 waves_model: 'C:\Users\narayana\projects\personal\arrhythmia_ml\models\Xwaves_logreg_patientwise_nav.joblib'
 waves_model_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\features\Xwaves_patientwise_nav_features.joblib'
+
+# waves + rr features
+waves_rr_model: 'C:\Users\narayana\projects\personal\arrhythmia_ml\models\Xwaves_Xrr_logreg_patientwise_nav.joblib'
+waves_rr_model_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\features\Xwaves_Xrr_patientwise_nav_features.joblib'
+waves_rr_gboost_model: 'C:\Users\narayana\projects\personal\arrhythmia_ml\models\Xwaves_Xrr_gboost_patientwise_nav.joblib'
+waves_rr_gboost_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\features\Xwaves_Xrr_gboost_patientwise_nav_features.joblib'
+
 
 # params
 # general filtering
@@ -22,7 +31,7 @@ peak_calibration: 80 # 80 ms window for calibrating detected peaks with annotate
 wfm_extraction_window: [-200,400] # 200ms before peak and 400ms after peak
 
 # RR features
-local_rr_mean_beat_window = 5
+local_rr_mean_beat_window: 5
 
 
 # model training
