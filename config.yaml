@@ -1,39 +1,64 @@
 # config file
 
-# paths
+# ── paths ────────────────────────────────────────────────────────────────────
 raw_data_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\raw'
-models_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\models'
+models_path   : 'C:\Users\narayana\projects\personal\arrhythmia_ml\models'
 features_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\features'
 
-# specific model and feature paths
+# MLflow tracking URI — 'mlruns' folder will be created here locally.
+# Change to a remote URI (e.g. http://localhost:5000) if you run a tracking server.
+mlflow_tracking_uri: 'mlruns'
 
-# waves only
-waves_model: 'C:\Users\narayana\projects\personal\arrhythmia_ml\models\Xwaves_logreg_patientwise_nav.joblib'
-waves_model_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\features\Xwaves_patientwise_nav_features.joblib'
+# MLflow experiment name — all runs will be grouped under this name in the UI.
+mlflow_experiment_name: 'arrhythmia_beat_classification'
 
-# waves + rr features
-waves_rr_model: 'C:\Users\narayana\projects\personal\arrhythmia_ml\models\Xwaves_Xrr_logreg_patientwise_nav.joblib'
-waves_rr_model_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\features\Xwaves_Xrr_patientwise_nav_features.joblib'
-waves_rr_gboost_model: 'C:\Users\narayana\projects\personal\arrhythmia_ml\models\Xwaves_Xrr_gboost_patientwise_nav.joblib'
-waves_rr_gboost_features: 'C:\Users\narayana\projects\personal\arrhythmia_ml\features\Xwaves_Xrr_gboost_patientwise_nav_features.joblib'
-
-
-# params
-# general filtering
+# ── signal processing params ──────────────────────────────────────────────────
 general_bandpass: [0.5, 30.0]
 notch: 50
 
-# beats extraction
 beats_bandpass: [1, 15]
-peak_calibration: 80 # 80 ms window for calibrating detected peaks with annotated data
+peak_calibration: 80   # ms window for calibrating detected peaks with annotated data
 
-# feature extraction waveform
-wfm_extraction_window: [-200,400] # 200ms before peak and 400ms after peak
-
-# RR features
+# ── feature extraction params ─────────────────────────────────────────────────
+wfm_extraction_window: [-200, 400]   # ms before and after R peak
 local_rr_mean_beat_window: 5
 
-
-# model training
+# ── model training params ─────────────────────────────────────────────────────
 max_iter: 2000
 
+# ── label filtering ───────────────────────────────────────────────────────────
+# beat types to keep for classification — all others are discarded
+keep_labels: ['N', 'A', 'V']
+
+# ── experiments ───────────────────────────────────────────────────────────────
+# Each experiment has:
+#   run_name          : label shown in the MLflow UI
+#   features          : list of feature groups to compute
+#                       options -> "waves", "interval_related"
+#   classifier        : which model to use
+#                       options -> "logreg", "gboost"
+#   classifier_params : optional dict of hyperparams passed to build_pipeline()
+#                       logreg  keys -> max_iter, solver
+#                       gboost  keys -> n_estimators, n_iter_no_change, validation_fraction
+#   description       : free-text note logged as an MLflow tag
+experiments:
+  exp01_waves_logreg:
+    run_name          : 'exp01_waves_logreg'
+    features          : ['waves']
+    classifier        : 'logreg'
+    classifier_params : {max_iter: 2000, solver: 'saga'}
+    description       : 'Baseline — R waveforms only, logistic regression'
+
+  exp02_waves_rr_logreg:
+    run_name          : 'exp02_waves_rr_logreg'
+    features          : ['waves', 'interval_related']
+    classifier        : 'logreg'
+    classifier_params : {max_iter: 2000, solver: 'saga'}
+    description       : 'R waveforms + RR interval features, logistic regression'
+
+  exp03_waves_rr_gboost:
+    run_name          : 'exp03_waves_rr_gboost'
+    features          : ['waves', 'interval_related']
+    classifier        : 'gboost'
+    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
+    description       : 'R waveforms + RR interval features, gradient boosting'
