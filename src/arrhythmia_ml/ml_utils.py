@@ -11,6 +11,8 @@ from sklearn.model_selection import GroupShuffleSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils.class_weight import compute_sample_weight
+from imblearn.over_sampling import SMOTE
+
 
 from arrhythmia_ml import file_utils, preprocess, extract_features
 
@@ -71,12 +73,13 @@ def build_feature_matrix(
     local_rr_mean_beat_window: int,
     compute_only: list[str],
     keep_labels: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    combine_features:bool,
+) ->  tuple[np.ndarray | None, ...]:
 
     X_wfms_all, X_rr_all, y_all, g_all = [], [], [], []
 
     for pid in participant_ids:
-        signal, fs, channels, r_peaks, labels = file_utils.load_raw_participant_data(
+        signal, fs, _, r_peaks, labels = file_utils.load_raw_participant_data(
             raw_data_path=raw_data_path, participant_id=pid
         )
 
@@ -105,29 +108,39 @@ def build_feature_matrix(
             X_wfms_all.append(X_wfm_pid)
         if X_rr_pid is not None:
             X_rr_all.append(X_rr_pid)
-
+        
         y_all.append(y_pid)
         g_all.append(g_pid)
 
-    # stack whichever feature blocks were computed
-    parts = []
-    if X_wfms_all:
-        parts.append(np.vstack(X_wfms_all))
-    if X_rr_all:
-        parts.append(np.vstack(X_rr_all))
 
-    X = np.hstack(parts)
     y = np.concatenate(y_all)
     groups = np.concatenate(g_all)
-
     # filter to desired labels
     mask = np.isin(y, keep_labels)
-    X, y, groups = X[mask], y[mask], groups[mask]
 
-    return X, y, groups
+    # mask groups and labels
+    y, groups = y[mask], groups[mask]
+
+    # stack whichever feature blocks were computed if needed
+    if combine_features:
+        parts = []
+        if X_wfms_all:
+            parts.append(np.vstack(X_wfms_all))
+        if X_rr_all:
+            parts.append(np.vstack(X_rr_all))
+        X = np.hstack(parts)
+
+        X = X[mask]
+
+        return X, y, groups
+    else:
+        X_wfm = np.vstack(X_wfms_all)[mask] if X_wfms_all else None
+        X_rr = np.vstack(X_rr_all)[mask] if X_rr_all else None
+        return X_wfm, X_rr, y, groups
 
 
-# ── train / split ─────────────────────────────────────────────────────────────
+
+# ── train / split / oversample ─────────────────────────────────────────────────────────────
 
 def patient_wise_split(
     X: np.ndarray,
@@ -144,6 +157,21 @@ def patient_wise_split(
     y_train, y_test = y[train_idx], y[test_idx]
 
     return X_train, X_test, y_train, y_test
+
+def oversample(X_train:np.ndarray, y_train:np.ndarray) -> tuple[np.ndarray,np.ndarray]:
+    """_summary_
+
+    Args:
+        X_train (np.ndarray): _description_
+        y_train (np.ndarray): _description_
+
+    Returns:
+        tuple[np.ndarray,np.ndarray]: _description_
+    """
+    sm = SMOTE()
+    X_train_oversamp, y_train_oversamp = sm.fit_resample(X=X_train,y=y_train)
+
+    return X_train_oversamp, y_train_oversamp
 
 
 def build_pipeline(classifier_name: str, classifier_params: dict) -> Pipeline:
