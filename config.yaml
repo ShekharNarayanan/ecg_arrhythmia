@@ -37,6 +37,7 @@ keep_labels: ['N', 'A', 'V']
 #                       options -> "waves", "interval_related"
 #   classifier        : which model to use
 #                       options -> "logreg", "gboost"
+#   oversample        : whether you want to use SMOTE oversampling. beefs up training time.
 #   classifier_params : optional dict of hyperparams passed to build_pipeline()
 #                       logreg  keys -> max_iter, solver
 #                       gboost  keys -> n_estimators, n_iter_no_change, validation_fraction
@@ -46,6 +47,7 @@ experiments:
     run_name          : 'exp01_waves_logreg'
     features          : ['waves']
     classifier        : 'logreg'
+    oversample        : False
     classifier_params : {max_iter: 2000, solver: 'saga'}
     description       : 'Baseline — R waveforms only, logistic regression'
 
@@ -53,6 +55,7 @@ experiments:
     run_name          : 'exp02_waves_rr_logreg'
     features          : ['waves', 'interval_related']
     classifier        : 'logreg'
+    oversample        : False
     classifier_params : {max_iter: 2000, solver: 'saga'}
     description       : 'R waveforms + RR interval features, logistic regression'
 
@@ -60,5 +63,14 @@ experiments:
     run_name          : 'exp03_waves_rr_gboost'
     features          : ['waves', 'interval_related']
     classifier        : 'gboost'
+    oversample        : False
     classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
     description       : 'R waveforms + RR interval features, gradient boosting'
+
+  exp03_waves_rr_gboost_smote:
+    run_name          : 'exp03_waves_rr_gboost_smote'
+    features          : ['waves', 'interval_related']
+    classifier        : 'gboost'
+    oversample        : True
+    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
+    description       : 'R waveforms + RR interval features, gradient boosting, oversampling'
