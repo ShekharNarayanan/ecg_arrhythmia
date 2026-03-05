@@ -3,7 +3,6 @@
 
 import argparse
 import numpy as np
-import mlflow
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay, classification_report, f1_score
 

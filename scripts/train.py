@@ -20,6 +20,7 @@ def main(exp_name: str):
     run_name          = exp_cfg["run_name"]
     compute_only      = exp_cfg["features"]
     classifier_name   = exp_cfg["classifier"]
+    oversample_bool   = exp_cfg["oversample"]
     classifier_params = exp_cfg.get("classifier_params", {})
     description       = exp_cfg.get("description", "")
 
@@ -43,9 +44,17 @@ def main(exp_name: str):
         local_rr_mean_beat_window=local_rr_mean_beat_window,
         compute_only=compute_only,
         keep_labels=keep_labels,
+        combine_features=True
     )
+    # split data based on patients    
+    assert X is not None, "X is None"
+    assert y is not None, "y is None"
+    assert groups is not None, "groups is None"
+    X_train, X_test, y_train, y_test = ml_utils.patient_wise_split(X, y, groups)    
 
-    X_train, X_test, y_train, y_test = ml_utils.patient_wise_split(X, y, groups)
+
+    if oversample_bool:
+        X_train, y_train = ml_utils.oversample(X_train = X_train,y_train = y_train)
 
     clf = ml_utils.build_pipeline(
         classifier_name=classifier_name,
