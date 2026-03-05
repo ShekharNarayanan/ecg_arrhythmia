@@ -188,6 +188,7 @@ def build_pipeline(classifier_name: str, classifier_params: dict) -> Pipeline:
             max_iter=classifier_params.get("max_iter", 2000),
             class_weight="balanced",
             solver=classifier_params.get("solver", "saga"),
+            verbose=classifier_params.get("verbose",False)
         )
 
     elif classifier_name == "gboost":

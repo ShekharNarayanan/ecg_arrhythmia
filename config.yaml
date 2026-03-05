@@ -4,6 +4,7 @@
 raw_data_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\raw'
 models_path   : 'C:\Users\narayana\projects\personal\arrhythmia_ml\models'
 features_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\features'
+mlflow_exported: 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\mlflow_exported'
 
 # MLflow tracking URI — 'mlruns' folder will be created here locally.
 # Change to a remote URI (e.g. http://localhost:5000) if you run a tracking server.
@@ -39,7 +40,7 @@ keep_labels: ['N', 'A', 'V']
 #                       options -> "logreg", "gboost"
 #   oversample        : whether you want to use SMOTE oversampling. beefs up training time.
 #   classifier_params : optional dict of hyperparams passed to build_pipeline()
-#                       logreg  keys -> max_iter, solver
+#                       logreg  keys -> max_iter, solver, verbose
 #                       gboost  keys -> n_estimators, n_iter_no_change, validation_fraction
 #   description       : free-text note logged as an MLflow tag
 experiments:
@@ -48,7 +49,7 @@ experiments:
     features          : ['waves']
     classifier        : 'logreg'
     oversample        : False
-    classifier_params : {max_iter: 2000, solver: 'saga'}
+    classifier_params : {max_iter: 2000, solver: 'saga', verbose: true}
     description       : 'Baseline — R waveforms only, logistic regression'
 
   exp02_waves_rr_logreg:
@@ -56,7 +57,7 @@ experiments:
     features          : ['waves', 'interval_related']
     classifier        : 'logreg'
     oversample        : False
-    classifier_params : {max_iter: 2000, solver: 'saga'}
+    classifier_params : {max_iter: 2000, solver: 'saga', verbose: true}
     description       : 'R waveforms + RR interval features, logistic regression'
 
   exp03_waves_rr_gboost:
