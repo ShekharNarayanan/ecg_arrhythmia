@@ -3,6 +3,7 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 P.S: Setup and usage instructions coming soon
 ## Current stage => [Feature engineering / Machine Learning](#data-analysis-and-machine-learning):
 ![ECG example](media/readme/gboost_rr_smote.png)
+![ECG example](media/readme/macro_f1_comparison.png)
 Current insight: Gradient boosting with waveform + RR interval features + SMOTE oversampling reaches Macro F1 = 0.520. SMOTE balanced training classes to 33.3% each, but slightly hurt overall performance (from 0.529). A beat recall dropped (0.67 vs 0.76), suggesting current features don't separate A beats cleanly enough in feature space for synthetic samples to help. Next step: add RR irregularity and QRS morphology features.
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
