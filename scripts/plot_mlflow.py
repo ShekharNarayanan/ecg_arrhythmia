@@ -20,8 +20,5 @@ plt.figure(figsize=(10,3))
 for i,(model,f1) in enumerate(zip(model_names,macro_f1_data)):
     plt.barh(y=model, width=f1, color=colors[i])
 plt.xlabel("macro_f1")
-smote_idx = list(model_names).index("exp03_waves_rr_gboost_smote")
-smote_f1 = macro_f1_data.iloc[smote_idx]
-plt.annotate("oversampled", xy=(smote_f1, smote_idx), xytext=(smote_f1+0.05, smote_idx+0.8), arrowprops=dict(arrowstyle="->"))
 plt.tight_layout()
 plt.show()

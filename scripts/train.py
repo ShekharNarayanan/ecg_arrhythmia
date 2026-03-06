@@ -7,7 +7,7 @@ import numpy as np
 import mlflow
 import mlflow.sklearn
 from sklearn.metrics import classification_report
-
+from sklearn.preprocessing import LabelEncoder
 from arrhythmia_ml import file_utils
 from arrhythmia_ml import ml_utils
 
@@ -29,6 +29,7 @@ def main(exp_name: str):
     bandpass_window           = config["general_bandpass"]
     wave_extraction_window    = config["wfm_extraction_window"]
     local_rr_mean_beat_window = config["local_rr_mean_beat_window"]
+    qrs_extraction_window     = config["qrs_extraction_window"]
     keep_labels               = np.array(config["keep_labels"])
 
     ml_utils.setup_mlflow(config)
@@ -44,17 +45,23 @@ def main(exp_name: str):
         local_rr_mean_beat_window=local_rr_mean_beat_window,
         compute_only=compute_only,
         keep_labels=keep_labels,
+        qrs_extraction_window=qrs_extraction_window,
         combine_features=True
     )
+
     # split data based on patients    
     assert X is not None, "X is None"
     assert y is not None, "y is None"
     assert groups is not None, "groups is None"
-    X_train, X_test, y_train, y_test = ml_utils.patient_wise_split(X, y, groups)    
+
+    # label encode y
+    le = LabelEncoder()
+    y_encoded = np.array(le.fit_transform(y))
+    X_train, X_test, y_train_encoded, y_test_encoded = ml_utils.patient_wise_split(X, y_encoded, groups)    
 
 
     if oversample_bool:
-        X_train, y_train = ml_utils.oversample(X_train = X_train,y_train = y_train)
+        X_train, y_train_encoded = ml_utils.oversample(X_train = X_train,y_train = y_train_encoded)
 
     clf = ml_utils.build_pipeline(
         classifier_name=classifier_name,
@@ -72,13 +79,20 @@ def main(exp_name: str):
             "n_train"              : len(X_train),
             "n_test"               : len(X_test),
         })
-
+        # save label encoding
+        ml_utils.save_label_encoding(label_encoding=le)
         print("Starting training...")
-        clf = ml_utils.fit_pipeline(clf, X_train, y_train, classifier_name)
+        clf = ml_utils.fit_pipeline(clf, X_train, y_train_encoded, classifier_name)
         print("Finished training.")
+        # get prediction
+        y_pred_encoded = clf.predict(X_test)
 
-        y_pred = clf.predict(X_test)
+        # transform back to labels
+        y_train = np.array(le.inverse_transform(y_train_encoded))
+        y_test = np.array(le.inverse_transform(y_test_encoded))
+        y_pred = np.array(le.inverse_transform(y_pred_encoded))
 
+        # compute macro f1
         macro_f1 = ml_utils.log_metrics(y_test, y_pred, keep_labels)
         print(classification_report(y_test, y_pred))
         print(f"Macro F1: {macro_f1:.3f}")

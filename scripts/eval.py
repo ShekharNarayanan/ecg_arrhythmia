@@ -25,7 +25,9 @@ def main(exp_name: str):
     clf                      = ml_utils.load_model(run_id)
     X_test, y_test, y_train  = ml_utils.load_test_data(run_id)
 
-    y_pred = clf.predict(X_test)
+    # load the label encoder and then use inverse transform to get the right labels for plots
+    le = ml_utils.load_label_encoder(run_id)
+    y_pred = le.inverse_transform(clf.predict(X_test))
 
     # metrics
     class_labels, counts = np.unique(y_train, return_counts=True)
