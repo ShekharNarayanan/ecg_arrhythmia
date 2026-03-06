@@ -1,7 +1,7 @@
 # * - extract relevant features - *
 import numpy as np
 
-
+# --------------------------------- waveform features -----------------------------------------------------------------------------------------------
 def extract_waveforms(
     ecg_signal: np.ndarray,
     fs: int,
@@ -55,7 +55,7 @@ def extract_waveforms(
 
     return X
 
-
+# --------------------------------- RR features -----------------------------------------------------------------------------------------------
 def compute_pre_post_delta_rr(
     r_peaks: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -192,7 +192,65 @@ def extract_all_rr_features(
     "deviation_rr": deviation_rr,
     }
 
+# --------------------------------- QRS features -----------------------------------------------------------------------------------------------
+def extract_all_qrs_features(X_wfms:np.ndarray, window_start_ms:float, qrs_extraction_window:list[int], fs:int)->dict:
+    """_summary_
 
+    Args:
+        X_wfms (np.ndarray): _description_
+        qrs_extraction_window (list): _description_
+        fs (int): _description_
+
+    Returns:
+        dict: _description_
+    """
+    
+    # convert window in ms to samples
+    q_window = int((qrs_extraction_window[0] * fs)/ 1000)
+    s_window = int((qrs_extraction_window[1] * fs)/ 1000)
+    wfm_window_start = int((window_start_ms * fs) / 1000)
+
+    assert (s_window - q_window) < X_wfms.shape[1], 'Extraction window longer than waveform limits'
+    
+    # define all output vectors
+    q_r_intervals = np.full((X_wfms.shape[0],),np.nan) # intervals between q and r onsets
+    r_s_intervals = np.full((X_wfms.shape[0],),np.nan)  # intervals between r and s onsets
+
+    q_r_amps = np.full((X_wfms.shape[0],),np.nan) # voltage difference between q and r onsets
+    r_s_amps = np.full((X_wfms.shape[0],),np.nan)  # voltage difference between r and s onsets
+
+
+    # loop through all waves
+    r_peak_ind = wfm_window_start 
+    for wfm_ind in range(X_wfms.shape[0]):
+        
+        # get waveform and peak index
+        wfm = X_wfms[wfm_ind,:]
+
+        # calculate offsets for indices as np.argmin gives a relative index, make sure they are within bounds of wfm
+        q_start = max(0, r_peak_ind + q_window)
+        s_end = min(len(wfm), r_peak_ind + s_window)
+
+        q_timestamp = int(q_start + np.argmin(wfm[q_start: r_peak_ind]))
+        s_timestamp = int(r_peak_ind + np.argmin(wfm[r_peak_ind: s_end]))
+
+        # get time interval info between q r and s
+        q_r_intervals[wfm_ind] = abs(r_peak_ind - q_timestamp)
+        r_s_intervals[wfm_ind] =  abs(r_peak_ind - s_timestamp)  
+
+        # get amplitude difference info for each event
+        q_r_amps[wfm_ind] = abs(wfm[q_timestamp] - wfm[r_peak_ind])
+        r_s_amps[wfm_ind] = abs(wfm[r_peak_ind] - wfm[s_timestamp] )
+        
+    return {'q_r_intervals': q_r_intervals,
+            'r_s_intervals': r_s_intervals,
+            'q_r_amps': q_r_amps,
+            'r_s_amps': r_s_amps
+
+    }
+
+
+# --------------------------------- combine features -----------------------------------------------------------------------------------------------
 def return_commbined_feature_matrix(
     ecg_signal: np.ndarray,
     r_peaks: np.ndarray,
@@ -200,6 +258,7 @@ def return_commbined_feature_matrix(
     window_start_ms: float,
     window_end_ms: float,
     local_rr_beat_window: int=5,
+    qrs_extraction_window: list[int] | None = None,
     compute_only: list[str] | None = None
 ) -> tuple[np.ndarray | None, ...]:
     """Combines all extracted features and returns them as output.
@@ -237,7 +296,18 @@ def return_commbined_feature_matrix(
         X_rr = np.column_stack(list(rr_dict.values()))
     else:
         X_rr = None
+
+    if "QRS" in compute_only:
+        assert X_waves is not None, 'X_waves is None so QRS features cannot be computed. Change features in config to include waves and try again'
+        assert qrs_extraction_window is not None, 'qrs_extraction_window must be provided when computing QRS features'
+        qrs_dict = extract_all_qrs_features(X_wfms=X_waves,window_start_ms=window_start_ms, qrs_extraction_window=qrs_extraction_window, fs=fs)
+        X_qrs = np.column_stack(list(qrs_dict.values()))
+    else:
+        X_qrs = None
     
 
-    return X_waves, X_rr
+    return X_waves, X_rr, X_qrs
+
+if __name__ == '__main__':
+    pass
 
