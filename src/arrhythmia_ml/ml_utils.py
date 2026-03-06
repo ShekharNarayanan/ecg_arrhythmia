@@ -12,6 +12,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils.class_weight import compute_sample_weight
 from imblearn.over_sampling import SMOTE
+from xgboost import XGBClassifier
+import joblib
 
 
 from arrhythmia_ml import file_utils, preprocess, extract_features
@@ -51,6 +53,11 @@ def save_test_data(X_test: np.ndarray, y_test: np.ndarray, y_train: np.ndarray):
         np.savez(path, X_test=X_test, y_test=y_test, y_train=y_train)
         mlflow.log_artifact(path, artifact_path="test_data")
 
+def save_label_encoding(label_encoding):
+    with tempfile.TemporaryDirectory() as tmp:
+        le_path = os.path.join(tmp, "label_encoder.joblib")
+        joblib.dump(label_encoding, le_path)
+        mlflow.log_artifact(le_path, artifact_path="label_encoder")
 
 def load_test_data(run_id: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     client = mlflow.tracking.MlflowClient()
@@ -58,6 +65,10 @@ def load_test_data(run_id: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     data = np.load(f"{artifacts_path}/test_data.npz", allow_pickle=True)
     return data["X_test"], data["y_test"], data["y_train"]
 
+def load_label_encoder(run_id: str):
+    client = mlflow.tracking.MlflowClient()
+    artifacts_path = client.download_artifacts(run_id, "label_encoder")
+    return joblib.load(os.path.join(artifacts_path, "label_encoder.joblib"))
 
 def load_model(run_id: str):
     return mlflow.sklearn.load_model(f"runs:/{run_id}/model")
@@ -74,9 +85,10 @@ def build_feature_matrix(
     compute_only: list[str],
     keep_labels: np.ndarray,
     combine_features:bool,
+    qrs_extraction_window: list[int] | None = None,
 ) ->  tuple[np.ndarray | None, ...]:
 
-    X_wfms_all, X_rr_all, y_all, g_all = [], [], [], []
+    X_wfms_all, X_rr_all, X_qrs_all, y_all, g_all = [], [], [], [], []
 
     for pid in participant_ids:
         signal, fs, _, r_peaks, labels = file_utils.load_raw_participant_data(
@@ -91,13 +103,14 @@ def build_feature_matrix(
             freq=50,
         )
 
-        X_wfm_pid, X_rr_pid = extract_features.return_commbined_feature_matrix(
+        X_wfm_pid, X_rr_pid, X_qrs_pid = extract_features.return_commbined_feature_matrix(
             ecg_signal=sig,
             r_peaks=r_peaks,
             fs=fs,
             window_start_ms=wave_extraction_window[0],
             window_end_ms=wave_extraction_window[1],
             local_rr_beat_window=local_rr_mean_beat_window,
+            qrs_extraction_window=qrs_extraction_window,
             compute_only=compute_only,
         )
 
@@ -108,6 +121,8 @@ def build_feature_matrix(
             X_wfms_all.append(X_wfm_pid)
         if X_rr_pid is not None:
             X_rr_all.append(X_rr_pid)
+        if X_qrs_pid is not None:
+            X_qrs_all.append(X_qrs_pid)
         
         y_all.append(y_pid)
         g_all.append(g_pid)
@@ -128,8 +143,11 @@ def build_feature_matrix(
             parts.append(np.vstack(X_wfms_all))
         if X_rr_all:
             parts.append(np.vstack(X_rr_all))
-        X = np.hstack(parts)
+        if X_qrs_all:
+            parts.append(np.vstack(X_qrs_all))
 
+    # append all features horizontally next to each other
+        X = np.hstack(parts)
         X = X[mask]
 
         return X, y, groups
@@ -198,6 +216,13 @@ def build_pipeline(classifier_name: str, classifier_params: dict) -> Pipeline:
             validation_fraction=classifier_params.get("validation_fraction", 0.1),
             verbose=1,
         )
+    elif classifier_name == 'xgboost':
+        estimator = XGBClassifier(
+            n_estimators=classifier_params.get("n_estimators",100),
+            colsample_bylevel=classifier_params.get("colsample_bylevel",0.7),
+            tree_method=classifier_params.get("tree_method",'hist'),
+            device=classifier_params.get("device",'cpu')
+        )
 
     else:
         raise ValueError(
@@ -219,7 +244,7 @@ def fit_pipeline(
     classifier_name: str,
 ) -> Pipeline:
     # classifiers that cannot use class_weight natively need sample_weight at fit time
-    needs_sample_weight = classifier_name in ["gboost"]
+    needs_sample_weight = classifier_name in ["gboost","xgboost"]
 
     if needs_sample_weight:
         sample_weights = compute_sample_weight("balanced", y_train)
