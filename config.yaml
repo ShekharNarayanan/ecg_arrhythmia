@@ -23,6 +23,8 @@ peak_calibration: 80   # ms window for calibrating detected peaks with annotated
 # ── feature extraction params ─────────────────────────────────────────────────
 wfm_extraction_window: [-200, 400]   # ms before and after R peak
 local_rr_mean_beat_window: 5
+qrs_extraction_window: [-200, 60] # 200 ms before the r peak for Q and 60 ms after the peak for S
+
 
 # ── model training params ─────────────────────────────────────────────────────
 max_iter: 2000
@@ -35,7 +37,7 @@ keep_labels: ['N', 'A', 'V']
 # Each experiment has:
 #   run_name          : label shown in the MLflow UI
 #   features          : list of feature groups to compute
-#                       options -> "waves", "interval_related"
+#                       options -> "waves", "interval_related", "QRS" (waves is a strict requirement for computing QRS features)
 #   classifier        : which model to use
 #                       options -> "logreg", "gboost"
 #   oversample        : whether you want to use SMOTE oversampling. beefs up training time.
@@ -68,10 +70,43 @@ experiments:
     classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
     description       : 'R waveforms + RR interval features, gradient boosting'
 
-  exp03_waves_rr_gboost_smote:
-    run_name          : 'exp03_waves_rr_gboost_smote'
+  exp04_waves_rr_gboost_smote:
+    run_name          : 'exp04_waves_rr_gboost_smote'
     features          : ['waves', 'interval_related']
     classifier        : 'gboost'
     oversample        : True
     classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
     description       : 'R waveforms + RR interval features, gradient boosting, oversampling'
+
+  exp05_rr_gboost:
+    run_name          : 'exp05_rr_gboost'
+    features          : ['interval_related']
+    classifier        : 'gboost'
+    oversample        : False
+    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
+    description       : 'RR interval features, gradient boosting, sample weight balanced'
+
+  exp06_rr_gboost_smote:
+    run_name          : 'exp06_rr_gboost_smote'
+    features          : ['interval_related']
+    classifier        : 'gboost'
+    oversample        : True
+    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
+    description       : 'RR interval features, gradient boosting, oversampling, sample weight balanced'
+
+  exp07_waves_rr_QRS_gboost:
+    run_name          : 'exp07_waves_rr_QRS_gboost'
+    features          : ['waves','interval_related','QRS']
+    classifier        : 'gboost'
+    oversample        : False
+    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
+    description       : 'Waves, RR interval features, gradient boosting, sample weight balanced'
+
+  exp08_waves_rr_QRS_xgboost:
+    run_name          : 'exp08_waves_rr_QRS_xgboost'
+    features          : ['waves','interval_related','QRS']
+    classifier        : 'xgboost'
+    oversample        : False
+    classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description       : 'Waves, RR interval features, xtra gradient boosting, sample weight balanced'
+
