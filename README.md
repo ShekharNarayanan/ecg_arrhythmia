@@ -2,8 +2,9 @@
 This project focuses on **exploring/analyzing ECG data** with literature-backed methods with the **[MIT-BIH Arrhythmia Database (PhysioNet)](https://physionet.org/content/mitdb/1.0.0/)**. There is also focus on making these scripts more production ready in terms of how other teams can use the code developed. 
 P.S: Setup and usage instructions coming soon
 ## Current stage => [Feature engineering / Machine Learning](#data-analysis-and-machine-learning):
+![ECG example](media/readme/current_all_model_comparison.png)
 ![ECG example](media/readme/feature_comparison.png)
-![ECG example](media/readme/classifier_comparison.png)
+
 Current insight: XGBoost with waveform + RR interval + QRS morphology features reaches Macro F1 = 0.577. QRS features (Q-R/R-S intervals and amplitudes) added meaningful signal, improving over waveforms + RR alone (0.53). SMOTE oversampling was dropped: it slowed training significantly without improving performance, and hurt A beat recall. The A class (3.5% of data) remains the core challenge with 0.42 recall. Next step: hyperparameter optimization of XGBoost via randomized search with patient-wise cross-validation.
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
@@ -40,5 +41,6 @@ Current insight: XGBoost with waveform + RR interval + QRS morphology features r
 ## Data app to view results
 - [ ]
 - [ ]
+
 
 - [ ]
