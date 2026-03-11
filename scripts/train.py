@@ -22,6 +22,7 @@ def main(exp_name: str):
     classifier_name   = exp_cfg["classifier"]
     oversample_bool   = exp_cfg["oversample"]
     classifier_params = exp_cfg.get("classifier_params", {})
+    search_CV_params  = exp_cfg.get("search_CV_params", {})
     description       = exp_cfg.get("description", "")
 
     # signal / feature params
@@ -31,6 +32,10 @@ def main(exp_name: str):
     local_rr_mean_beat_window = config["local_rr_mean_beat_window"]
     qrs_extraction_window     = config["qrs_extraction_window"]
     keep_labels               = np.array(config["keep_labels"])
+
+    # model/ training params
+    cv_split_param    =  config["cv_split_param"]
+    n_iter_random_search = config["n_iter_random_search"]
 
     ml_utils.setup_mlflow(config)
 
@@ -57,9 +62,9 @@ def main(exp_name: str):
     # label encode y
     le = LabelEncoder()
     y_encoded = np.array(le.fit_transform(y))
-    X_train, X_test, y_train_encoded, y_test_encoded = ml_utils.patient_wise_split(X, y_encoded, groups)    
+    X_train, X_test, y_train_encoded, y_test_encoded, group_train, _ = ml_utils.patient_wise_split(X, y_encoded, groups)    
 
-
+    # check for oversampling
     if oversample_bool:
         X_train, y_train_encoded = ml_utils.oversample(X_train = X_train,y_train = y_train_encoded)
 
@@ -81,8 +86,22 @@ def main(exp_name: str):
         })
         # save label encoding
         ml_utils.save_label_encoding(label_encoding=le)
-        print("Starting training...")
-        clf = ml_utils.fit_pipeline(clf, X_train, y_train_encoded, classifier_name)
+        print("Starting training...")   
+        # check if grid search is true for model     
+        grid_search = True if search_CV_params else False
+        clf = ml_utils.fit_pipeline(clf=clf,  
+                                    X_train=X_train, 
+                                    y_train=y_train_encoded, 
+                                    classifier_name=classifier_name, 
+                                    grid_search=grid_search, 
+                                    grid_params=search_CV_params,
+                                    cv_split_param=cv_split_param,
+                                    n_iter_random_search=n_iter_random_search,
+                                    groups_train=group_train)
+        
+        # check if grid search is valid
+        if search_CV_params:
+            pass
         print("Finished training.")
         # get prediction
         y_pred_encoded = clf.predict(X_test)

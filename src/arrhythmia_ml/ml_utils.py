@@ -5,6 +5,7 @@ import numpy as np
 import mlflow
 import mlflow.sklearn
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import RandomizedSearchCV, GroupKFold
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 from sklearn.model_selection import GroupShuffleSplit
@@ -166,15 +167,16 @@ def patient_wise_split(
     groups: np.ndarray,
     test_size: float = 0.2,
     random_state: int = 42,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, ...]:
 
     gss = GroupShuffleSplit(n_splits=1, test_size=test_size, random_state=random_state)
     train_idx, test_idx = next(gss.split(X, y, groups=groups))
 
     X_train, X_test = X[train_idx], X[test_idx]
     y_train, y_test = y[train_idx], y[test_idx]
+    group_train, group_test = groups[train_idx], groups[test_idx]
 
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, group_train, group_test
 
 def oversample(X_train:np.ndarray, y_train:np.ndarray) -> tuple[np.ndarray,np.ndarray]:
     """_summary_
@@ -242,15 +244,42 @@ def fit_pipeline(
     X_train: np.ndarray,
     y_train: np.ndarray,
     classifier_name: str,
+    grid_search:bool=False,
+    grid_params:dict={},
+    cv_split_param:int=5,
+    n_iter_random_search=30,
+    groups_train:np.ndarray | None =None,
 ) -> Pipeline:
     # classifiers that cannot use class_weight natively need sample_weight at fit time
     needs_sample_weight = classifier_name in ["gboost","xgboost"]
-
     if needs_sample_weight:
-        sample_weights = compute_sample_weight("balanced", y_train)
-        clf.fit(X_train, y_train, clf__sample_weight=sample_weights)
+        sample_weights = compute_sample_weight("balanced",y_train)
     else:
-        clf.fit(X_train, y_train)
+        sample_weights = None
+
+    if grid_search:
+        assert grid_params is not None, 'Grid params are empty. Check config'
+        # define cross validation splits
+        cv = GroupKFold(n_splits=cv_split_param)
+        search = RandomizedSearchCV(
+            estimator=clf,
+            param_distributions=grid_params,
+            n_iter=n_iter_random_search,
+            cv=cv,
+            scoring='f1_macro',
+            random_state=42,
+            verbose=2,
+            n_jobs=-1
+        )
+        # make sure params match before search
+        assert X_train.shape[0] == len(y_train), f"Shape of X_train {len(X_train)} and y_train {len(y_train)} dont match"
+        assert len(y_train) == len(groups_train), f"Shape of y_train {len(y_train)} and groups_train {len(groups_train)} dont match"
+
+        search.fit(X_train, y_train, groups=groups_train, clf__sample_weight=sample_weights)
+        clf  = search.best_estimator_
+    else:
+        clf.fit(X_train, y_train, clf__sample_weight=sample_weights)
+
 
     return clf
 
