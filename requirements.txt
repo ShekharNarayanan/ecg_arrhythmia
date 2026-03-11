@@ -5,7 +5,7 @@ alembic==1.18.4
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.12.1
--e file:///C:/Users/narayana/projects/personal/arrhythmia_ml
+-e .
 asttokens==3.0.1
 attrs==25.4.0
 blinker==1.9.0
@@ -41,6 +41,7 @@ greenlet==3.3.2
 h11==0.16.0
 huey==2.6.0
 idna==3.11
+imbalanced-learn==0.14.1
 importlib-metadata==8.7.1
 ipykernel==7.2.0
 ipython==9.10.0
@@ -99,6 +100,7 @@ scikit-learn==1.8.0
 scipy==1.17.0
 seaborn==0.13.2
 six==1.17.0
+sklearn-compat==0.1.5
 skops==0.13.0
 smmap==5.0.2
 soundfile==0.13.1
@@ -118,5 +120,6 @@ waitress==3.0.2
 wcwidth==0.6.0
 werkzeug==3.1.6
 wfdb==4.3.1
+xgboost==3.2.0
 yarl==1.22.0
 zipp==3.23.0
