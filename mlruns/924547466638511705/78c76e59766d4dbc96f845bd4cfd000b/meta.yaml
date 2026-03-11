@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/narayana/projects/personal/arrhythmia_ml/mlruns/924547466638511705/78c76e59766d4dbc96f845bd4cfd000b/artifacts
+deleted_time: 1772790713664
+end_time: 1772790009863
+entry_point_name: ''
+experiment_id: '924547466638511705'
+lifecycle_stage: deleted
+run_id: 78c76e59766d4dbc96f845bd4cfd000b
+run_name: exp05_rr_gboost
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1772789971312
+status: 3
+tags: []
+user_id: narayana
