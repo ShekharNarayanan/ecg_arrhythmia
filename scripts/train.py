@@ -10,10 +10,14 @@ from sklearn.metrics import classification_report
 from sklearn.preprocessing import LabelEncoder
 from arrhythmia_ml import file_utils
 from arrhythmia_ml import ml_utils
+import yaml
+from pathlib import Path
 
 
 def main(exp_name: str):
-    config = file_utils.load_config()
+    with open(Path(__file__).resolve().parents[1] / "config.yaml", "r") as file:
+        config = yaml.safe_load(file)
+        
 
     # resolve experiment block
     exp_cfg           = config["experiments"][exp_name]

@@ -1,9 +1,7 @@
 # config file
 
 # ── paths ────────────────────────────────────────────────────────────────────
-raw_data_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\raw'
-models_path   : 'C:\Users\narayana\projects\personal\arrhythmia_ml\models'
-features_path : 'C:\Users\narayana\projects\personal\arrhythmia_ml\features'
+raw_data_path : 'data/raw'
 mlflow_exported: 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\mlflow_exported'
 
 # MLflow tracking URI — 'mlruns' folder will be created here locally.

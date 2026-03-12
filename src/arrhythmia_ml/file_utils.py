@@ -1,17 +1,11 @@
 # * -  file utilities for the project - *
 from __future__ import annotations
-import yaml
 import wfdb 
 import numpy as np
 from pathlib import Path
 
 
 
-def load_config():
-    with open(Path(__file__).resolve().parents[2] / "config.yaml", "r") as file:
-        config = yaml.safe_load(file)
-
-    return config
 
 
 def get_participant_ids(raw_data_path: str | Path) -> list[str]:
