@@ -1,5 +1,6 @@
 # * - extract relevant features - *
 import numpy as np
+import pywt
 
 # --------------------------------- waveform features -----------------------------------------------------------------------------------------------
 def extract_waveforms(
@@ -250,6 +251,24 @@ def extract_all_qrs_features(X_wfms:np.ndarray, window_start_ms:float, qrs_extra
     }
 
 
+# --------------------------------- wavelet features -----------------------------------------------------------------------------------------------
+def extract_wavelet_features(X_waveforms:np.ndarray,decomp_level:int=4)->np.ndarray:
+    """_summary_
+
+    Args:
+        X_waveforms (np.ndarray): _description_
+
+    Returns:
+        np.ndarray: _description_
+    """
+    
+    wavelet_coeff = []
+    for wfm_ind in range(X_waveforms.shape[0]):
+        coeffs = pywt.wavedec(data=X_waveforms[wfm_ind,:], wavelet='db2',level=decomp_level)  # get amplitudes for fast and slow freq components for each wave
+        wavelet_coeff.append(np.concatenate(coeffs[1:])) # append only the fast freq component/ amps at each level
+
+    return np.array(wavelet_coeff)
+
 # --------------------------------- combine features -----------------------------------------------------------------------------------------------
 def return_commbined_feature_matrix(
     ecg_signal: np.ndarray,
@@ -259,6 +278,7 @@ def return_commbined_feature_matrix(
     window_end_ms: float,
     local_rr_beat_window: int=5,
     qrs_extraction_window: list[int] | None = None,
+    wavelet_decomp_level:int =4,
     compute_only: list[str] | None = None
 ) -> tuple[np.ndarray | None, ...]:
     """Combines all extracted features and returns them as output.
@@ -275,7 +295,7 @@ def return_commbined_feature_matrix(
         tuple[np.ndarray | None, np.ndarray | None]: _description_
     """
     if compute_only is None:
-        compute_only = ["waves","interval_related"]
+        compute_only = ["waves","interval_related","QRS","wavelet"]
 
     
     if "waves" in compute_only:
@@ -304,9 +324,15 @@ def return_commbined_feature_matrix(
         X_qrs = np.column_stack(list(qrs_dict.values()))
     else:
         X_qrs = None
+
+    if 'wavelet' in compute_only:
+        assert X_waves is not None, 'X_waves is None so wavelet features cannot be computed. Change features in config to include waves and try again' 
+        X_wavelet = extract_wavelet_features(X_waves,wavelet_decomp_level)
+    else:
+        X_wavelet = None
     
 
-    return X_waves, X_rr, X_qrs
+    return X_waves, X_rr, X_qrs, X_wavelet
 
 if __name__ == '__main__':
     pass

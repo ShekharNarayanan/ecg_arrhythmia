@@ -83,13 +83,14 @@ def build_feature_matrix(
     bandpass_window: list,
     wave_extraction_window: list,
     local_rr_mean_beat_window: int,
+    wavelet_decomp_level: int,
     compute_only: list[str],
     keep_labels: np.ndarray,
     combine_features:bool,
     qrs_extraction_window: list[int] | None = None,
 ) ->  tuple[np.ndarray | None, ...]:
 
-    X_wfms_all, X_rr_all, X_qrs_all, y_all, g_all = [], [], [], [], []
+    X_wfms_all, X_rr_all, X_qrs_all, X_wavelets_all, y_all, g_all = [], [], [], [], [], []
 
     for pid in participant_ids:
         signal, fs, _, r_peaks, labels = file_utils.load_raw_participant_data(
@@ -104,13 +105,14 @@ def build_feature_matrix(
             freq=50,
         )
 
-        X_wfm_pid, X_rr_pid, X_qrs_pid = extract_features.return_commbined_feature_matrix(
+        X_wfm_pid, X_rr_pid, X_qrs_pid, X_wavelet_pid = extract_features.return_commbined_feature_matrix(
             ecg_signal=sig,
             r_peaks=r_peaks,
             fs=fs,
             window_start_ms=wave_extraction_window[0],
             window_end_ms=wave_extraction_window[1],
             local_rr_beat_window=local_rr_mean_beat_window,
+            wavelet_decomp_level=wavelet_decomp_level,
             qrs_extraction_window=qrs_extraction_window,
             compute_only=compute_only,
         )
@@ -124,6 +126,8 @@ def build_feature_matrix(
             X_rr_all.append(X_rr_pid)
         if X_qrs_pid is not None:
             X_qrs_all.append(X_qrs_pid)
+        if X_wavelet_pid is not None:
+            X_wavelets_all.append(X_wavelet_pid)
         
         y_all.append(y_pid)
         g_all.append(g_pid)
@@ -146,6 +150,8 @@ def build_feature_matrix(
             parts.append(np.vstack(X_rr_all))
         if X_qrs_all:
             parts.append(np.vstack(X_qrs_all))
+        if X_wavelets_all:
+            parts.append(np.vstack(X_wavelets_all))
 
     # append all features horizontally next to each other
         X = np.hstack(parts)
@@ -155,7 +161,9 @@ def build_feature_matrix(
     else:
         X_wfm = np.vstack(X_wfms_all)[mask] if X_wfms_all else None
         X_rr = np.vstack(X_rr_all)[mask] if X_rr_all else None
-        return X_wfm, X_rr, y, groups
+        X_qrs = np.vstack(X_qrs_all)[mask] if X_qrs_all else None
+        X_wavelet = np.vstack(X_wavelets_all)[mask] if X_wavelets_all else None
+        return X_wfm, X_rr, X_qrs, X_wavelet, y, groups
 
 
 

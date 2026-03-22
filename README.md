@@ -3,9 +3,8 @@ This project focuses on **exploring/analyzing ECG data** with literature-backed 
 P.S: Setup and usage instructions coming soon
 ## Current stage => [Feature engineering / Machine Learning](#data-analysis-and-machine-learning):
 ![ECG example](media/readme/current_all_model_comparison.png)
-![ECG example](media/readme/feature_comparison.png)
 
-Current insight: XGBoost with waveform + RR interval + QRS morphology features reaches Macro F1 = 0.577. QRS features (Q-R/R-S intervals and amplitudes) added meaningful signal, improving over waveforms + RR alone (0.53). SMOTE oversampling was dropped: it slowed training significantly without improving performance, and hurt A beat recall. The A class (3.5% of data) remains the core challenge with 0.42 recall. Next step: hyperparameter optimization of XGBoost via randomized search with patient-wise cross-validation.
+Current insight: Added Wavelet features, and it seems to be adding noise and drops performance.
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
 - [x] Notch filtering
@@ -22,6 +21,7 @@ Current insight: XGBoost with waveform + RR interval + QRS morphology features r
 - [x] **Build table with labels from annotations**
 - [x] **Extract RR interval features**: pre/post RR, delta RR, RR ratio, local RR mean, deviation from local mean
 - [x] **Extract QRS morphology features**: Q-R interval, R-S interval, Q-R amplitude, R-S amplitude
+- [x] **Extract wavelet features and use them with XGBoost**
 ### Literature used:
 - https://inass.org/wp-content/uploads/2022/12/2023043016-2.pdf
 ## Data Analysis and Machine Learning
