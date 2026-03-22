@@ -3,9 +3,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 from arrhythmia_ml import file_utils
 import seaborn as sns
-
+import yaml
+from pathlib import Path
 # get config
-config = file_utils.load_config()
+with open(Path(__file__).resolve().parents[1] / "config.yaml", "r") as file:
+        config = yaml.safe_load(file)
 mlflow_export_path = config["mlflow_exported"]
 
 # load data

@@ -2,7 +2,7 @@
 This project focuses on **exploring/analyzing ECG data** with literature-backed methods with the **[MIT-BIH Arrhythmia Database (PhysioNet)](https://physionet.org/content/mitdb/1.0.0/)**. There is also focus on making these scripts more production ready in terms of how other teams can use the code developed. 
 P.S: Setup and usage instructions coming soon
 ## Current stage => [Feature engineering / Machine Learning](#data-analysis-and-machine-learning):
-![ECG example](media/readme/current_all_model_comparison.png)
+![ECG example](media/readme/macro_f1_comparison.png)
 
 Current insight: Added Wavelet features, and it seems to be adding noise and drops performance.
 ## Preprocessing
