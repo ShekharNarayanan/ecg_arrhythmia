@@ -19,9 +19,11 @@ beats_bandpass: [1, 15]
 peak_calibration: 80   # ms window for calibrating detected peaks with annotated data
 
 # ── feature extraction params ─────────────────────────────────────────────────
-wfm_extraction_window: [-200, 400]   # ms before and after R peak
-local_rr_mean_beat_window: 5
-qrs_extraction_window: [-200, 60] # 200 ms before the r peak for Q and 60 ms after the peak for S
+wfm_extraction_window       : [-200, 400]   # ms before and after R peak
+local_rr_mean_beat_window   : 5
+qrs_extraction_window       : [-200, 60] # 200 ms before the r peak for Q and 60 ms after the peak for S
+wavelet_decomp_level        : 4 # level for decomposition
+rr_irregularity_window      : 64 # look n beats to the left and n to the right of the current peak
 
 
 # ── model training params ─────────────────────────────────────────────────────
@@ -124,4 +126,12 @@ experiments:
                         clf__colsample_bytree: [0.6, 0.7, 0.8, 1.0] 
                         }
     description       : 'Waves, RR interval features, xtra gradient boosting, gridCV, sample weight balanced'
+
+  exp10_waves_rr_QRS_wavelet_xgboost:
+    run_name          : 'exp10_waves_rr_QRS_xgboost'
+    features          : ['waves','interval_related','QRS','wavelet']
+    classifier        : 'xgboost'
+    oversample        : False
+    classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description       : 'Waves, RR interval features, QRS, wavelet features, xtra gradient boosting, sample weight balanced'
 
