@@ -2,7 +2,7 @@
 
 # ── paths ────────────────────────────────────────────────────────────────────
 raw_data_path : 'data/raw'
-mlflow_exported: 'C:\Users\narayana\projects\personal\arrhythmia_ml\data\mlflow_exported'
+mlflow_exported: 'data\mlflow_exported'
 
 # MLflow tracking URI — 'mlruns' folder will be created here locally.
 # Change to a remote URI (e.g. http://localhost:5000) if you run a tracking server.
