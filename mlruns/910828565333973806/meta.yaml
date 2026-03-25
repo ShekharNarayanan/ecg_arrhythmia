@@ -1,7 +1,0 @@
-artifact_location: /Users/shekharnarayanan/Desktop/personal_projects/arrhythmia_ml/mlruns/910828565333973806
-creation_time: 1773342156278
-experiment_id: '910828565333973806'
-last_update_time: 1773342156278
-lifecycle_stage: active
-name: arrhythmia_beat_classification
-workspace: default
