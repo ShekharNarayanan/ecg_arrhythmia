@@ -1,5 +1,8 @@
+from arrhythmia_ml import plots_utils
+
+
 def main():
-    from arrhythmia_ml import file_utils, preprocess, plots, beats
+    from arrhythmia_ml import file_utils, preprocess, beats
     from matplotlib import pyplot as plt
     import numpy as np
 
@@ -52,7 +55,7 @@ def main():
 
     # --- Top subplot ---
     plt.sca(axes[0])
-    plots.plot_ecg_segment(
+    plots_utils.plot_ecg_segment(
         signal=raw_sig,
         fs=fs,
         start_s=0,
@@ -61,7 +64,7 @@ def main():
         label=f"raw {channels[chan_to_plot]}",
         show_annotations=False,
     )
-    plots.plot_ecg_segment(
+    plots_utils.plot_ecg_segment(
         signal=bpf_notch_signal,  
         fs=fs,
         start_s=0,
@@ -78,7 +81,7 @@ def main():
 
     # --- Bottom subplot ---
     plt.sca(axes[1])
-    plots.plot_ecg_segment(
+    plots_utils.plot_ecg_segment(
         signal=bpf_notch_signal,  # offset for visibility
         fs=fs,
         start_s=0,
