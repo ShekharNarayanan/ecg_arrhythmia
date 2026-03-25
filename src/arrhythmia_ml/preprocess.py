@@ -2,7 +2,7 @@
 import numpy as np
 import neurokit2 as nk
 
-
+# --------------------------------------------------------------------------------  helpers ----------------------------------------------------------------------------------------------------------------------------------------------------
 def bandpass_1d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) -> np.ndarray:    
     """_summary_
 
@@ -134,4 +134,13 @@ def detrend_baseline_correct_2d(signal: np.ndarray, duration: float, fs: int) ->
         out[:, ch] = detrend_baseline_correct_1d(signal[:, ch], duration, fs)
 
     return out
+
+# -------------------------------------------------------  use cases --------------------------------------------------------------------------
+def get_preprocessed_signal(raw_sig:np.ndarray, fs:int, bandpass_window:list):
+    processed_sig = notch_filter_1d(
+    bandpass_1d(raw_sig, fs=fs, low=bandpass_window[0], high=bandpass_window[1]),
+    fs=fs,
+    freq=50,
+)
+    return processed_sig
 
