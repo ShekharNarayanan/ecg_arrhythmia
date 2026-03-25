@@ -1,10 +1,10 @@
 # ECG Data Exploration, Preprocessing and Machine Learning
 This project focuses on **exploring/analyzing ECG data** with literature-backed methods with the **[MIT-BIH Arrhythmia Database (PhysioNet)](https://physionet.org/content/mitdb/1.0.0/)**. There is also focus on making these scripts more production ready in terms of how other teams can use the code developed. 
 P.S: Setup and usage instructions coming soon
-## Current stage => [Feature engineering / Machine Learning](#data-analysis-and-machine-learning):
+## Current stage => [Data App and Visuals](#data-app-and-visuals):
 ![ECG example](media/readme/macro_f1_comparison.png)
 
-Current insight: Added rr irregularity features, no improvement. The best combination of features seems to be QRS and interval related features without the irregularity feature
+Current insight: Added rr irregularity features, no improvement. The best combination of features seems to be QRS and interval related features without the irregularity feature.
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
 - [x] Notch filtering
@@ -38,9 +38,15 @@ Current insight: Added rr irregularity features, no improvement. The best combin
 - [x] **Config-driven experiments**: new experiments require only a config.yaml entry, no code changes
 - [x] **Label encoding and artifact logging**: LabelEncoder saved as MLflow artifact for consistent eval
 
-## Data app to view results
-- [ ]
-- [ ]
+## Data App and Visuals
+- [x] Create initial relevant visuals for N vs A vs V beats:
+    - [x]   Waveform shape
+    - [x]   pre_rr vs post_rr intervals scatter distribution
+    - [x]   rr_irregularity violin plot 
+    - [x]   QRS beat variation violin
+    - [x]   change or rr_irregularity over time
+    - [x]   feature correlation matrix to show redundancy
+- [ ] Finalize plots
 
 
-- [ ]
+- [ ] Finalize architecture for data app
