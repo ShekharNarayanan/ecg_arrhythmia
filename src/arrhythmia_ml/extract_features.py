@@ -154,9 +154,36 @@ def compute_deviation_from_local_mean(
 
     return np.array([pre_i / mean_i for pre_i, mean_i in zip(pre_rr, local_rr_mean)])
 
+def compute_rr_irregularity(r_peaks:np.ndarray,rr_irregularity_window:int)->np.ndarray:
+    """_summary_
+
+    Args:
+        r_peaks (np.ndarray): _description_
+        rr_irregularity_window (int): _description_
+
+    Returns:
+        np.array: _description_
+    """
+    peak_intervals = np.diff(r_peaks)
+    rr_irreg = np.zeros((len(r_peaks),))
+
+    for p_ind in range(len(r_peaks)):
+        # decide left and right side of window based on peaks
+        left = max(0, p_ind  - rr_irregularity_window)
+        right = min(len(peak_intervals), p_ind + rr_irregularity_window)
+
+        # find relevant peaks in the window and take mean/std
+        relevant_peaks = peak_intervals[left:right]
+        mean = np.mean(relevant_peaks )
+        std  = np.std(relevant_peaks )
+        # append value of irregularity 
+        rr_irreg[p_ind] = std / mean if mean !=0 else 0
+
+    return np.array(rr_irreg)
+
 
 def extract_all_rr_features(
-    r_peaks: np.ndarray, local_rr_mean_beat_window: int
+    r_peaks: np.ndarray, local_rr_mean_beat_window: int, rr_irregularity_window:int
 ) -> dict:
     """_summary_
 
@@ -184,6 +211,9 @@ def extract_all_rr_features(
         local_rr_mean=local_rr_mean, pre_rr=pre_rr
     )
 
+    # get rr irregularity
+    rr_irreg = compute_rr_irregularity(r_peaks=r_peaks, rr_irregularity_window=rr_irregularity_window)
+
     return {
     "pre_rr": pre_rr,
     "post_rr": post_rr,
@@ -191,6 +221,7 @@ def extract_all_rr_features(
     "pre_post_rr_ratio": pre_post_rr_ratio,
     "local_rr_mean": local_rr_mean,
     "deviation_rr": deviation_rr,
+    "rr_irreg": rr_irreg
     }
 
 # --------------------------------- QRS features -----------------------------------------------------------------------------------------------
@@ -278,6 +309,7 @@ def return_commbined_feature_matrix(
     window_end_ms: float,
     local_rr_beat_window: int=5,
     qrs_extraction_window: list[int] | None = None,
+    rr_irregularity_window: int = 64,
     wavelet_decomp_level:int =4,
     compute_only: list[str] | None = None
 ) -> tuple[np.ndarray | None, ...]:
@@ -312,7 +344,7 @@ def return_commbined_feature_matrix(
 
     if "interval_related" in compute_only:
         # get r_peak interval related features and corresponding feature vector
-        rr_dict = extract_all_rr_features(r_peaks=r_peaks,local_rr_mean_beat_window=local_rr_beat_window)
+        rr_dict = extract_all_rr_features(r_peaks=r_peaks,local_rr_mean_beat_window=local_rr_beat_window,rr_irregularity_window=rr_irregularity_window)
         X_rr = np.column_stack(list(rr_dict.values()))
     else:
         X_rr = None

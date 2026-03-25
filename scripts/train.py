@@ -35,6 +35,7 @@ def main(exp_name: str):
     wave_extraction_window    = config["wfm_extraction_window"]
     local_rr_mean_beat_window = config["local_rr_mean_beat_window"]
     qrs_extraction_window     = config["qrs_extraction_window"]
+    rr_irregularity_window    = config["rr_irregularity_window"]
     wavelet_decomp_level      = config["wavelet_decomp_level"]
     keep_labels               = np.array(config["keep_labels"])
 
@@ -53,6 +54,7 @@ def main(exp_name: str):
         bandpass_window=bandpass_window,
         wave_extraction_window=wave_extraction_window,
         local_rr_mean_beat_window=local_rr_mean_beat_window,
+        rr_irregularity_window=rr_irregularity_window,
         wavelet_decomp_level=wavelet_decomp_level,
         compute_only=compute_only,
         keep_labels=keep_labels,

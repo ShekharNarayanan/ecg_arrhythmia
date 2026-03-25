@@ -135,3 +135,11 @@ experiments:
     classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
     description       : 'Waves, RR interval features, QRS, wavelet features, xtra gradient boosting, sample weight balanced'
 
+  exp11_waves_rr_rr_irreg_QRS_xgboost:
+    run_name          : 'exp11_waves_rr_rr_irreq_QRS_xgboost'
+    features          : ['waves','interval_related','QRS']
+    classifier        : 'xgboost'
+    oversample        : False
+    classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description       : 'Waves, RR interval features, RR irregularity, QRS, xtra gradient boosting, sample weight balanced'
+
