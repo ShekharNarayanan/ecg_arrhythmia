@@ -4,7 +4,7 @@ P.S: Setup and usage instructions coming soon
 ## Current stage => [Feature engineering / Machine Learning](#data-analysis-and-machine-learning):
 ![ECG example](media/readme/macro_f1_comparison.png)
 
-Current insight: Added Wavelet features, and it seems to be adding noise and drops performance.
+Current insight: Added rr irregularity features, no improvement. The best combination of features seems to be QRS and interval related features without the irregularity feature
 ## Preprocessing
 - [x] 0.5 - 30 Hz Filtering
 - [x] Notch filtering
@@ -31,8 +31,8 @@ Current insight: Added Wavelet features, and it seems to be adding noise and dro
 - [x] **SMOTE oversampling**: Macro F1 = 0.520 (dropped: slowed training, no improvement)
 - [x] **Feature ablation**: waves + RR + QRS outperforms subsets; QRS features add value
 - [x] **XGBoost with waveforms + RR + QRS features**: Macro F1 = 0.577
-- [ ] **XGBoost hyperparameter optimization**: randomized search with patient-wise CV
-- [ ] **RR irregularity feature (coefficient of variation of RR intervals)**
+- [x] **XGBoost hyperparameter optimization**: randomized search with patient-wise CV
+- [x] **RR irregularity feature (coefficient of variation of RR intervals)**
 ## MLOps
 - [x] **MLflow experiment tracking**: all runs tracked with metrics, parameters, and artifacts for reproducibility and comparison across experiments
 - [x] **Config-driven experiments**: new experiments require only a config.yaml entry, no code changes
