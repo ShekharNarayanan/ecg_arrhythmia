@@ -35,3 +35,28 @@ def plot_ecg_segment(signal: np.ndarray,fs: int,
     if show_annotations and r_peaks is not None:
         local_peaks = r_peaks[(r_peaks >= start) & (r_peaks < end)] - start
         plt.plot(t[local_peaks], segment[local_peaks], marker = 'o', linestyle = 'None', color='red', alpha=0.3)
+
+
+
+def plot_qrs_complex(X_waveforms:np.ndarray, fs:int, pid:int=0):
+    """_summary_
+
+    Args:
+        X_waveforms (np.ndarray): _description_
+        fs (int): _description_
+    """
+
+    t = np.arange(X_waveforms.shape[1]) / fs
+    complex = X_waveforms[pid,:]
+
+    plt.plot(t,complex)
+    plt.title(f"QRS Complex Participant {pid}")
+    plt.xlabel("time (ms)")
+    plt.ylabel("mV")
+
+
+
+
+
+    
+
