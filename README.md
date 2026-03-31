@@ -37,6 +37,7 @@ Current insight: Added rr irregularity features, no improvement. The best combin
 - [x] **MLflow experiment tracking**: all runs tracked with metrics, parameters, and artifacts for reproducibility and comparison across experiments
 - [x] **Config-driven experiments**: new experiments require only a config.yaml entry, no code changes
 - [x] **Label encoding and artifact logging**: LabelEncoder saved as MLflow artifact for consistent eval
+- [x] **Finalized config file for ablation use in app**
 
 ## Data App and Visuals
 - [x] Create initial relevant visuals for N vs A vs V beats:
