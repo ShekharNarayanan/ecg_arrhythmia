@@ -4,11 +4,7 @@
 raw_data_path : 'data/raw'
 mlflow_exported: 'data/mlflow_exported'
 
-# MLflow tracking URI — 'mlruns' folder will be created here locally.
-# Change to a remote URI (e.g. http://localhost:5000) if you run a tracking server.
 mlflow_tracking_uri: 'mlruns'
-
-# MLflow experiment name — all runs will be grouped under this name in the UI.
 mlflow_experiment_name: 'arrhythmia_beat_classification'
 
 # ── signal processing params ──────────────────────────────────────────────────
@@ -21,126 +17,137 @@ peak_calibration: 80   # ms window for calibrating detected peaks with annotated
 # ── feature extraction params ─────────────────────────────────────────────────
 wfm_extraction_window       : [-200, 400]   # ms before and after R peak
 local_rr_mean_beat_window   : 5
-qrs_extraction_window       : [-200, 60] # 200 ms before the r peak for Q and 60 ms after the peak for S
-wavelet_decomp_level        : 4 # level for decomposition
-rr_irregularity_window      : 64 # look n beats to the left and n to the right of the current peak
-
+qrs_extraction_window       : [-200, 60]    # 200 ms before the r peak for Q and 60 ms after for S
+wavelet_decomp_level        : 4
+rr_irregularity_window      : 64            # look n beats left and right of the current peak
 
 # ── model training params ─────────────────────────────────────────────────────
-max_iter: 2000 # max iter for log reg
-cv_split_param: 5 # number of groups for cross validation
-n_iter_random_search: 30 # number of iterations for random search
+max_iter: 2000
+cv_split_param: 5
+n_iter_random_search: 30
 
 # ── label filtering ───────────────────────────────────────────────────────────
-# beat types to keep for classification — all others are discarded
 keep_labels: ['N', 'A', 'V']
 
 # ── experiments ───────────────────────────────────────────────────────────────
 # Each experiment has:
-#   run_name          : label shown in the MLflow UI
-#   features          : list of feature groups to compute
-#                       options -> "waves", "interval_related", "QRS" (waves is a strict requirement for computing QRS features), "wavelet", "rr_irregularity
-#   classifier        : which model to use
-#                       options -> "logreg", "gboost"
-#   oversample        : whether you want to use SMOTE oversampling. beefs up training time.
-#   classifier_params : optional dict of hyperparams passed to build_pipeline()
-#                       logreg  keys -> max_iter, solver, verbose
-#                       gboost  keys -> n_estimators, n_iter_no_change, validation_fraction
-#   search_params       : (optional) dict of param lists for RandomizedSearchCV. omit if not needed.
-#   description       : free-text note logged as an MLflow tag
+#   run_name                : label shown in the MLflow UI
+#   features                : options -> "waves", "interval_related", "QRS", "wavelet"
+#                             waves is required for QRS and wavelet features
+#   classifier              : options -> "logreg", "xgboost"
+#   oversample              : SMOTE oversampling (kept for reference, not used in ablation)
+#   include_rr_irregularity : whether to include rr_irreg in interval_related features
+#   classifier_params       : hyperparams passed to build_pipeline()
+#                             logreg  keys -> max_iter, solver, verbose
+#                             xgboost keys -> n_estimators, colsample_bylevel, tree_method, device
+#   search_CV_params        : (optional) param grid for RandomizedSearchCV
+#   description             : free-text note logged as an MLflow tag
+
 experiments:
+
+  # ── logreg ablation ───────────────────────────────────────────────────────────
   exp01_waves_logreg:
-    run_name          : 'exp01_waves_logreg'
-    features          : ['waves']
-    classifier        : 'logreg'
-    oversample        : False
-    classifier_params : {max_iter: 2000, solver: 'saga', verbose: true}
-    description       : 'Baseline — R waveforms only, logistic regression'
+    run_name                : 'exp01_waves_logreg'
+    features                : ['waves']
+    classifier              : 'logreg'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {max_iter: 2000, solver: 'saga', verbose: true}
+    description             : 'Baseline — waveforms only, logistic regression'
 
   exp02_waves_rr_logreg:
-    run_name          : 'exp02_waves_rr_logreg'
-    features          : ['waves', 'interval_related']
-    classifier        : 'logreg'
-    oversample        : False
-    classifier_params : {max_iter: 2000, solver: 'saga', verbose: true}
-    description       : 'R waveforms + RR interval features, logistic regression'
+    run_name                : 'exp02_waves_rr_logreg'
+    features                : ['waves', 'interval_related']
+    classifier              : 'logreg'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {max_iter: 2000, solver: 'saga', verbose: true}
+    description             : 'Waveforms + RR features, logistic regression'
 
-  exp03_waves_rr_gboost:
-    run_name          : 'exp03_waves_rr_gboost'
-    features          : ['waves', 'interval_related']
-    classifier        : 'gboost'
-    oversample        : False
-    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
-    description       : 'R waveforms + RR interval features, gradient boosting'
+  exp03_waves_rr_QRS_logreg:
+    run_name                : 'exp03_waves_rr_QRS_logreg'
+    features                : ['waves', 'interval_related', 'QRS']
+    classifier              : 'logreg'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {max_iter: 2000, solver: 'saga', verbose: true}
+    description             : 'Waveforms + RR + QRS features, logistic regression'
 
-  exp04_waves_rr_gboost_smote:
-    run_name          : 'exp04_waves_rr_gboost_smote'
-    features          : ['waves', 'interval_related']
-    classifier        : 'gboost'
-    oversample        : True
-    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
-    description       : 'R waveforms + RR interval features, gradient boosting, oversampling'
+  exp04_waves_rr_QRS_wavelet_logreg:
+    run_name                : 'exp04_waves_rr_QRS_wavelet_logreg'
+    features                : ['waves', 'interval_related', 'QRS', 'wavelet']
+    classifier              : 'logreg'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {max_iter: 2000, solver: 'saga', verbose: true}
+    description             : 'Waveforms + RR + QRS + wavelet, logistic regression — expected to degrade'
 
-  exp05_rr_gboost:
-    run_name          : 'exp05_rr_gboost'
-    features          : ['interval_related']
-    classifier        : 'gboost'
-    oversample        : False
-    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
-    description       : 'RR interval features, gradient boosting, sample weight balanced'
+  exp05_waves_rr_no_irreg_QRS_logreg:
+    run_name                : 'exp05_waves_rr_no_irreg_QRS_logreg'
+    features                : ['waves', 'interval_related', 'QRS']
+    classifier              : 'logreg'
+    oversample              : False
+    include_rr_irregularity : False
+    classifier_params       : {max_iter: 2000, solver: 'saga', verbose: true}
+    description             : 'Waveforms + RR (no irregularity) + QRS, logistic regression — expected to degrade'
 
-  exp06_rr_gboost_smote:
-    run_name          : 'exp06_rr_gboost_smote'
-    features          : ['interval_related']
-    classifier        : 'gboost'
-    oversample        : True
-    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
-    description       : 'RR interval features, gradient boosting, oversampling, sample weight balanced'
+  # ── xgboost ablation ──────────────────────────────────────────────────────────
+  exp06_waves_xgboost:
+    run_name                : 'exp06_waves_xgboost'
+    features                : ['waves']
+    classifier              : 'xgboost'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description             : 'Baseline — waveforms only, xgboost'
 
-  exp07_waves_rr_QRS_gboost:
-    run_name          : 'exp07_waves_rr_QRS_gboost'
-    features          : ['waves','interval_related','QRS']
-    classifier        : 'gboost'
-    oversample        : False
-    classifier_params : {n_estimators: 100, n_iter_no_change: 10, validation_fraction: 0.1}
-    description       : 'Waves, RR interval features, gradient boosting, sample weight balanced'
+  exp07_waves_rr_xgboost:
+    run_name                : 'exp07_waves_rr_xgboost'
+    features                : ['waves', 'interval_related']
+    classifier              : 'xgboost'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description             : 'Waveforms + RR features, xgboost'
 
   exp08_waves_rr_QRS_xgboost:
-    run_name          : 'exp08_waves_rr_QRS_xgboost'
-    features          : ['waves','interval_related','QRS']
-    classifier        : 'xgboost'
-    oversample        : False
-    classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
-    description       : 'Waves, RR interval features, xtra gradient boosting, sample weight balanced'
+    run_name                : 'exp08_waves_rr_QRS_xgboost'
+    features                : ['waves', 'interval_related', 'QRS']
+    classifier              : 'xgboost'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description             : 'Waveforms + RR + QRS features, xgboost — best configuration'
 
-  exp09_waves_rr_QRS_xgboost_gridCV:
-    run_name          : 'exp09_waves_rr_QRS_xgboost_gridCV'
-    features          : ['waves','interval_related','QRS']
-    classifier        : 'xgboost'
-    oversample        : False
-    classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
-    search_CV_params  : {clf__n_estimators: [100, 200, 300, 500], 
-                        clf__learning_rate: [0.01, 0.05, 0.1, 0.2],
-                        clf__min_child_weight: [1, 3, 5, 10],
-                        clf__subsample: [0.6, 0.7, 0.8, 1.0],
-                        clf__colsample_bytree: [0.6, 0.7, 0.8, 1.0] 
-                        }
-    description       : 'Waves, RR interval features, xtra gradient boosting, gridCV, sample weight balanced'
+  exp09_waves_rr_QRS_wavelet_xgboost:
+    run_name                : 'exp09_waves_rr_QRS_wavelet_xgboost'
+    features                : ['waves', 'interval_related', 'QRS', 'wavelet']
+    classifier              : 'xgboost'
+    oversample              : False
+    include_rr_irregularity : True
+    classifier_params       : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description             : 'Waveforms + RR + QRS + wavelet, xgboost — expected to degrade'
 
-  exp10_waves_rr_QRS_wavelet_xgboost:
-    run_name          : 'exp10_waves_rr_QRS_xgboost'
-    features          : ['waves','interval_related','QRS','wavelet']
-    classifier        : 'xgboost'
-    oversample        : False
-    classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
-    description       : 'Waves, RR interval features, QRS, wavelet features, xtra gradient boosting, sample weight balanced'
+  exp10_waves_rr_no_irreg_QRS_xgboost:
+    run_name                : 'exp10_waves_rr_no_irreg_QRS_xgboost'
+    features                : ['waves', 'interval_related', 'QRS']
+    classifier              : 'xgboost'
+    oversample              : False
+    include_rr_irregularity : False
+    classifier_params       : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+    description             : 'Waveforms + RR (no irregularity) + QRS, xgboost — expected to degrade'
 
-  exp11_waves_rr_rr_irreg_QRS_xgboost:
-    run_name          : 'exp11_waves_rr_rr_irreq_QRS_xgboost'
-    features          : ['waves','interval_related','QRS']
-    classifier        : 'xgboost'
-    oversample        : False
-    include_rr_irregularity: True
-    classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
-    description       : 'Waves, RR interval features, RR irregularity, QRS, xtra gradient boosting, sample weight balanced'
-
+  # ── tuning (commented out — run manually if needed) ───────────────────────────
+  # exp11_waves_rr_QRS_xgboost_gridCV:
+  #   run_name                : 'exp11_waves_rr_QRS_xgboost_gridCV'
+  #   features                : ['waves', 'interval_related', 'QRS']
+  #   classifier              : 'xgboost'
+  #   oversample              : False
+  #   include_rr_irregularity : True
+  #   classifier_params       : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
+  #   search_CV_params        : {clf__n_estimators: [100, 200, 300, 500],
+  #                             clf__learning_rate: [0.01, 0.05, 0.1, 0.2],
+  #                             clf__min_child_weight: [1, 3, 5, 10],
+  #                             clf__subsample: [0.6, 0.7, 0.8, 1.0],
+  #                             clf__colsample_bytree: [0.6, 0.7, 0.8, 1.0]}
+  #   description             : 'Waveforms + RR + QRS, xgboost, RandomizedSearchCV'
