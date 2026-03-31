@@ -10,17 +10,17 @@ def extract_waveforms(
     window_start_ms: float,
     window_end_ms: float,
 ) -> np.ndarray:
-    """_summary_
+    """
+    Extract pqrs waveforms.
 
     Args:
-        ecg_signal (np.ndarray): _description_
-        fs (int): _description_
-        r_peaks (np.ndarray): _description_
-        window_start_ms (float): _description_
-        window_end_ms (float): _description_
-
+        ecg_signal (np.ndarray): -
+        fs (int): sampling frequency of the signal.
+        r_peaks (np.ndarray): r peaks in the signal
+        window_start_ms (float): left bound for waveform extraction. 
+        window_end_ms (float): right bound for waveform extraction.
     Returns:
-        np.ndarray: _description_
+        np.ndarray: feature matrix with all the waveforms in the ecg signal.
     """
 
     # define dimension params
@@ -64,10 +64,10 @@ def compute_pre_post_delta_rr(
      Ectopic beats tend to have irregular coupling intervals.
 
     Args:
-        r_peaks (np.ndarray): _description_
+        r_peaks (np.ndarray): -
 
     Returns:
-        tuple[np.ndarray,np.ndarray]: _description_
+        tuple[np.ndarray,np.ndarray]: returns pre and post rr intervals along with rate of acceleration of rhythm.
     """
     # calculate interval difference and initialize output
     peak_intervals = np.diff(r_peaks)
@@ -92,11 +92,12 @@ def compute_pre_post_delta_rr(
 
 
 def pre_and_post_rr_ratio(pre_rr: np.ndarray, post_rr: np.ndarray) -> np.ndarray:
-    """_summary_
+    """
+    Compute ratio of pre and post rr interval vectors.
 
     Args:
-        pre_rr (np.ndarray): _description_
-        post_rr (np.ndarray): _description_
+        pre_rr (np.ndarray): vector of pr_rr intervals for all beats.
+        post_rr (np.ndarray): vector of pr_rr intervals for all beats.
 
     Returns:
         np.ndarray: _description_
@@ -108,17 +109,17 @@ def pre_and_post_rr_ratio(pre_rr: np.ndarray, post_rr: np.ndarray) -> np.ndarray
 def compute_local_rr_mean(
     r_peaks: np.ndarray, local_rr_mean_beat_window: int
 ) -> np.ndarray:
-    """Compute a local mean for peak intervals in a specific beat window,
-    i.e. for each peak compute the mean of a number of peak intervals around it.
+    """Compute the mean peak intervals in a specific beat window,
     This gives a gives a "what's normal for this patient right now" baseline.
     Deviations from local mean is very different for normal vs abnormal beats.
 
     Args:
-        r_peaks (np.ndarray): _description_
-        beat_window (_type_): _description_
+        r_peaks (np.ndarray): -
+        local_rr_mean_beat_window (int):Number of beats before and after the current beat for computing the mean.
+
 
     Returns:
-        np.ndarray: _description_
+        np.ndarray: local mean for each beat.
     """
     # find peak intervals
     peak_intervals = np.diff(r_peaks)
@@ -141,28 +142,29 @@ def compute_deviation_from_local_mean(
     local_rr_mean: np.ndarray, pre_rr: np.ndarray
 ) -> np.ndarray:
     """
-    Compute how much a peak interval deviates from the local peak interval mean for each beat.
+    Compute how much a single peak interval deviates from the peak interval mean across a number of beats.
     Deviations from local mean is very different for normal vs abnormal beats.
 
     Args:
-        local_rr_mean (np.ndarray): _description_
-        pre_rr (np.ndarray): _description_
+        local_rr_mean (np.ndarray): Vector containing local rr mean for each beat.
+        pre_rr (np.ndarray): Vector containing pr_rr intervals for all beats.
 
     Returns:
-        np.ndarray: _description_
+        np.ndarray: Ratio of local rr mean to pre rr interval
     """
 
     return np.array([pre_i / mean_i for pre_i, mean_i in zip(pre_rr, local_rr_mean)])
 
 def compute_rr_irregularity(r_peaks:np.ndarray,rr_irregularity_window:int)->np.ndarray:
-    """_summary_
+    """
+    Compute irregularity in peak intervals using a given window.
 
     Args:
-        r_peaks (np.ndarray): _description_
-        rr_irregularity_window (int): _description_
+        r_peaks (np.ndarray):-
+        rr_irregularity_window (int): N beat window before and after current peak for computing irregularity
 
     Returns:
-        np.array: _description_
+        np.array: Irregularity for each beat.
     """
     peak_intervals = np.diff(r_peaks)
     rr_irreg = np.zeros((len(r_peaks),))
@@ -185,11 +187,13 @@ def compute_rr_irregularity(r_peaks:np.ndarray,rr_irregularity_window:int)->np.n
 def extract_all_rr_features(
     r_peaks: np.ndarray, local_rr_mean_beat_window: int, rr_irregularity_window:int
 ) -> dict:
-    """_summary_
+    """
+    Extracts all the peak interval features in one place.
 
     Args:
-        r_peaks (np.ndarray): _description_
-        local_rr_mean_beat_window (int): _description_
+        r_peaks (np.ndarray): -
+        local_rr_mean_beat_window (int): Number of beats before and after the current beat for computing the mean.
+        rr_irregularity_window (int):  N beat window before and after current peak for computing irregularity.
 
     Returns:
         tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]: _description_
@@ -226,15 +230,21 @@ def extract_all_rr_features(
 
 # --------------------------------- QRS features -----------------------------------------------------------------------------------------------
 def extract_all_qrs_features(X_wfms:np.ndarray, window_start_ms:float, qrs_extraction_window:list[int], fs:int)->dict:
-    """_summary_
-
+    """
+    Extracts qrs features. Computes the following:
+    1. q-r interval
+    2. r-s interval
+    3. q-r peaks amplitude difference
+    4. r-s peaks amplitude difference
     Args:
-        X_wfms (np.ndarray): _description_
-        qrs_extraction_window (list): _description_
-        fs (int): _description_
+        X_wfms (np.ndarray): Feature matrix containing waveforms of each beat.
+        qrs_extraction_window (list):Bounds for extracting q and s peaks (ms)
+        window_start_ms (float): left bound for waveform extraction. Used along with qrs extraction window to get Q and S peaks.
+
+        fs (int): Sampling rate of the ecg signal
 
     Returns:
-        dict: _description_
+        dict: Dict with all the features.
     """
     
     # convert window in ms to samples
@@ -283,19 +293,19 @@ def extract_all_qrs_features(X_wfms:np.ndarray, window_start_ms:float, qrs_extra
 
 
 # --------------------------------- wavelet features -----------------------------------------------------------------------------------------------
-def extract_wavelet_features(X_waveforms:np.ndarray,decomp_level:int=4)->np.ndarray:
-    """_summary_
-
+def extract_wavelet_features(X_waveforms:np.ndarray,wavelet_decomp_level:int=4)->np.ndarray:
+    """
+    Extracts fast freq components using wavelet decomposition/ transform.
     Args:
-        X_waveforms (np.ndarray): _description_
-
+        X_waveforms (np.ndarray): Feature matrix containing waveforms of all beats
+        wavelet_decomp_level (int): Chosen level for wavelet transformation.
     Returns:
-        np.ndarray: _description_
+        np.ndarray: wavelet coefficients of waveforms.
     """
     
     wavelet_coeff = []
     for wfm_ind in range(X_waveforms.shape[0]):
-        coeffs = pywt.wavedec(data=X_waveforms[wfm_ind,:], wavelet='db2',level=decomp_level)  # get amplitudes for fast and slow freq components for each wave
+        coeffs = pywt.wavedec(data=X_waveforms[wfm_ind,:], wavelet='db2',level=wavelet_decomp_level)  # get amplitudes for fast and slow freq components for each wave
         wavelet_coeff.append(np.concatenate(coeffs[1:])) # append only the fast freq component/ amps at each level
 
     return np.array(wavelet_coeff)
@@ -316,18 +326,24 @@ def return_commbined_feature_matrix(
     """Combines all extracted features and returns them as output.
 
     Args:
-        ecg_signal (np.ndarray): _description_
-        r_peaks (np.ndarray): _description_
-        labels (list): _description_
-        fs (int): _description_
-        window_start_ms (float): _description_
-        window_end_ms (float): _description_
+        ecg_signal (np.ndarray): -_
+        r_peaks (np.ndarray): -
+        labels (list): labels of beats
+        fs (int): sampling freq of the ecg signal
+        window_start_ms (float): Left bound for waveform extraction. Also used along qrs_extraction window.
+        window_end_ms (float): Right bound for waveform extraction.
+        qrs_extraction_window (list):Bounds for extracting q and s peaks (ms)
+        rr_irregularity_window (int): N beat window before and after current peak for computing irregularity.
+        wavelet_decomp_level (int): Chosen level for wavelet transformation.
+        compute_only (list): list of features for the function to compute.
+
+
 
     Returns:
-        tuple[np.ndarray | None, np.ndarray | None]: _description_
+        tuple[np.ndarray | None, np.ndarray | None]: Feature matrix containing features of choice
     """
     if compute_only is None:
-        compute_only = ["waves","interval_related","QRS","wavelet"]
+        compute_only = ["waves","interval_related","QRS"] # set of features to be computed if no list is given
 
     
     if "waves" in compute_only:

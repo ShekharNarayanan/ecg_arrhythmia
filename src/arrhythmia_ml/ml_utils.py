@@ -20,14 +20,30 @@ import joblib
 from arrhythmia_ml import file_utils, preprocess, extract_features
 
 
-# ── mlflow ────────────────────────────────────────────────────────────────────
+# ----- mlflow -------------------------------------------------------------------------------------------------------------------
 
 def setup_mlflow(config: dict):
+    """
+    Initialize mlflow tracking. Used in train.py
+
+    Args:
+        config (dict): _description_
+    """
     mlflow.set_tracking_uri(config["mlflow_tracking_uri"])
     mlflow.set_experiment(config["mlflow_experiment_name"])
 
 
 def get_run_by_name(experiment_name: str, run_name: str):
+    """
+    Get mlflow run details. Used in eval.py
+
+    Args:
+        experiment_name (str): Name of the experiment. Taken from config.yaml.
+        run_name (str): Run name. Identical to experiment name in this project.
+
+    Returns:
+        PagedList[Run]: Run data
+    """
     client = mlflow.tracking.MlflowClient()
     experiment = client.get_experiment_by_name(experiment_name)
 
@@ -55,27 +71,36 @@ def save_test_data(X_test: np.ndarray, y_test: np.ndarray, y_train: np.ndarray):
         mlflow.log_artifact(path, artifact_path="test_data")
 
 def save_label_encoding(label_encoding):
+    """Save label encoding to go from beat type to integers. Needed to work with XGBOOST etc. Used in train.py
+    """
     with tempfile.TemporaryDirectory() as tmp:
         le_path = os.path.join(tmp, "label_encoder.joblib")
         joblib.dump(label_encoding, le_path)
         mlflow.log_artifact(le_path, artifact_path="label_encoder")
 
 def load_test_data(run_id: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Load test data based on run id. Used in eval.py
+    """
     client = mlflow.tracking.MlflowClient()
     artifacts_path = client.download_artifacts(run_id, "test_data")
     data = np.load(f"{artifacts_path}/test_data.npz", allow_pickle=True)
     return data["X_test"], data["y_test"], data["y_train"]
 
 def load_label_encoder(run_id: str):
+    """
+    Load label encoder defined in train.py. Used in eval.py
+    """
     client = mlflow.tracking.MlflowClient()
     artifacts_path = client.download_artifacts(run_id, "label_encoder")
     return joblib.load(os.path.join(artifacts_path, "label_encoder.joblib"))
 
 def load_model(run_id: str):
+    """Load model based on run id from mlflow.
+    """
     return mlflow.sklearn.load_model(f"runs:/{run_id}/model")
 
 
-# ── feature matrix ────────────────────────────────────────────────────────────
+# ----- feature matrix ----------------------------------------------------------------------------------------------------
 
 def build_feature_matrix(
     raw_data_path: str,
@@ -90,6 +115,25 @@ def build_feature_matrix(
     combine_features:bool,
     qrs_extraction_window: list[int] | None = None,
 ) ->  tuple[np.ndarray | None, ...]:
+    """
+    Build feature matrix, labels and groups based on chosen options.
+    
+    Args:
+        raw_data_path (str): -
+        participant_ids (list[str]): -
+        bandpass_window (list): _description_
+        wave_extraction_window (list): Tuple containing the bounds for extraction of pqrs waveforms.
+        local_rr_mean_beat_window (int): Number of beats to consider when finding local rr mean.
+        rr_irregularity_window (int): Number of beats to consider around the current beat for computing irregularity
+        wavelet_decomp_level (int): Decomposition level for wavelet transform.
+        compute_only (list[str]): List of features that will be computed in the function.
+        keep_labels (np.ndarray): Class of beat types considered in the pipeline.
+        combine_features (bool): Option to return a combined X containing all features. If set to False, each feature has its own X.
+        qrs_extraction_window (list[int] | None, optional): Bounds for the window (in ms) used for extracting the Q and S peaks. Defaults to None.
+
+    Returns:
+        tuple[np.ndarray | None, ...]: Training data, labels and groups are returned.
+    """
 
     X_wfms_all, X_rr_all, X_qrs_all, X_wavelets_all, y_all, g_all = [], [], [], [], [], []
 
@@ -169,7 +213,7 @@ def build_feature_matrix(
 
 
 
-# ── train / split / oversample ─────────────────────────────────────────────────────────────
+# ----- train / split / oversample ----------------------------------------------------------------------------------------------------─
 
 def patient_wise_split(
     X: np.ndarray,
@@ -178,6 +222,19 @@ def patient_wise_split(
     test_size: float = 0.2,
     random_state: int = 42,
 ) -> tuple[np.ndarray, ...]:
+    """
+    Splits X, y, groups into train and test datasets. Groups are made to avoid training data leakage during the split.
+
+    Args:
+        X (np.ndarray): Feature matrix
+        y (np.ndarray): Labels
+        groups (np.ndarray): Patient groups.
+        test_size (float, optional):  Defaults to 0.2.
+        random_state (int, optional): Defaults to 42.
+
+    Returns:
+        tuple[np.ndarray, ...]: Train test split for X y and groups
+    """
 
     gss = GroupShuffleSplit(n_splits=1, test_size=test_size, random_state=random_state)
     train_idx, test_idx = next(gss.split(X, y, groups=groups))
@@ -189,14 +246,15 @@ def patient_wise_split(
     return X_train, X_test, y_train, y_test, group_train, group_test
 
 def oversample(X_train:np.ndarray, y_train:np.ndarray) -> tuple[np.ndarray,np.ndarray]:
-    """_summary_
+    """
+    SMOTE oversampling for creating synthetic samples that can help with class imbalance.
 
     Args:
-        X_train (np.ndarray): _description_
-        y_train (np.ndarray): _description_
+        X_train (np.ndarray): -
+        y_train (np.ndarray): -
 
     Returns:
-        tuple[np.ndarray,np.ndarray]: _description_
+        tuple[np.ndarray,np.ndarray]: X and y train matrices with synthetic entries.
     """
     sm = SMOTE()
     X_train_oversamp, y_train_oversamp = sm.fit_resample(X=X_train,y=y_train)
@@ -206,12 +264,20 @@ def oversample(X_train:np.ndarray, y_train:np.ndarray) -> tuple[np.ndarray,np.nd
 
 def build_pipeline(classifier_name: str, classifier_params: dict) -> Pipeline:
     """
-    Build a StandardScaler + classifier pipeline.
-    Add new classifiers here as the project grows.
+    Build a StandardScaler + classifier pipeline.    
 
     Supported options (set under experiments.<exp>.classifier in config.yaml):
         'logreg'  -> LogisticRegression
         'gboost'  -> GradientBoostingClassifier
+        'XGBOOST'  -> Extreme Gradient Boosting Classifier
+
+    Args:
+        classifier_name (str): -
+        classifier_params (dict): Params for the classifier specified in config file.
+
+
+    Returns:
+        Pipeline: clf object returned based on chosen classifier. Used in train.py
     """
     if classifier_name == "logreg":
         estimator = LogisticRegression(
@@ -260,6 +326,23 @@ def fit_pipeline(
     n_iter_random_search=30,
     groups_train:np.ndarray | None =None,
 ) -> Pipeline:
+    """
+    Fit chosen classifier on the training data. Used in train.py.
+
+    Args:
+        clf (Pipeline): -
+        X_train (np.ndarray): -
+        y_train (np.ndarray): -
+        classifier_name (str): -
+        grid_search (bool, optional): Bool to make use of random search cv if needed. Defaults to False.
+        grid_params (dict, optional): Random search cv params. Defaults to {}.
+        cv_split_param (int, optional): Number of splits to be made during cross validation. Defaults to 5.
+        n_iter_random_search (int, optional): Number of iterations in random search. Defaults to 30.
+        groups_train (np.ndarray | None, optional): train split of the groups matrix. Defaults to None.
+
+    Returns:
+        Pipeline: classifier with training data fit. Classifier with best random search params if when grid_search is True.
+    """
     # classifiers that cannot use class_weight natively need sample_weight at fit time
     needs_sample_weight = classifier_name in ["gboost","xgboost"]
     if needs_sample_weight:
@@ -283,7 +366,8 @@ def fit_pipeline(
         )
         # make sure params match before search
         assert X_train.shape[0] == len(y_train), f"Shape of X_train {len(X_train)} and y_train {len(y_train)} dont match"
-        assert len(y_train) == len(groups_train), f"Shape of y_train {len(y_train)} and groups_train {len(groups_train)} dont match"
+        if groups_train is not None:
+            assert len(y_train) == len(groups_train), f"Shape of y_train {len(y_train)} and groups_train {len(groups_train)} dont match"
 
         search.fit(X_train, y_train, groups=groups_train, clf__sample_weight=sample_weights)
         clf  = search.best_estimator_
@@ -294,7 +378,7 @@ def fit_pipeline(
     return clf
 
 
-# ── metrics ───────────────────────────────────────────────────────────────────
+# ----- metrics --------------------------------------------------------------------------------------------------------------─
 
 def log_metrics(y_test: np.ndarray, y_pred: np.ndarray, keep_labels: np.ndarray):
     """Log macro F1 and per-class F1 to the active MLflow run."""

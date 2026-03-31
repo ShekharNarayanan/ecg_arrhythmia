@@ -2,15 +2,18 @@
 import numpy as np
 import neurokit2 as nk
 
+
 # --------------------------------------------------------------------------------  helpers ----------------------------------------------------------------------------------------------------------------------------------------------------
-def bandpass_1d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) -> np.ndarray:    
-    """_summary_
+def bandpass_1d(
+    signal: np.ndarray, fs: int, low: float = 0.5, high: float = 30.0
+) -> np.ndarray:
+    """
+    Bandpass filter for 1d signal. Takes in a low pass and highpass limit.
 
     Returns:
-        _type_: _description_
+    band pass filtered signal
     """
     assert signal.ndim == 1, "Expected 1D signal array"
-
 
     y = nk.signal_filter(
         signal,
@@ -21,40 +24,8 @@ def bandpass_1d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) 
     return np.asarray(y, dtype=np.float32)
 
 
-def bandpass_2d(signal: np.ndarray,fs: int,low: float = 0.5,high: float = 30.0) -> np.ndarray:
-    """_summary_
-
-    Args:
-        signal (np.ndarray): _description_
-        fs (int): _description_
-        low (float, optional): _description_. Defaults to 0.5.
-        high (float, optional): _description_. Defaults to 30.0.
-
-    Returns:
-        np.ndarray: _description_
-    """
-
-    signal = np.asarray(signal)
-    assert signal.ndim == 2, f"Expected 2D signal array, got {signal.ndim}D"
-
-    out = np.empty(signal.shape, dtype=np.float32)
-
-    for ch in range(signal.shape[1]):
-        out[:, ch] = bandpass_1d(signal[:, ch], fs, low, high)
-
-    return out
-
-
 def notch_filter_1d(signal: np.ndarray, fs: int, freq: int = 50) -> np.ndarray:
-    """_summary_
-
-    Args:
-        signal (np.ndarray): _description_
-        fs (int): _description_
-        freq (int, optional): _description_. Defaults to 50.
-
-    Returns:
-        np.ndarray: _description_
+    """1d notch filter. Defaults at 50Hz
     """
     assert signal.ndim == 1, "Expected 1D signal array"
 
@@ -66,39 +37,20 @@ def notch_filter_1d(signal: np.ndarray, fs: int, freq: int = 50) -> np.ndarray:
     )
     return np.asarray(y, dtype=np.float32)
 
-def notch_filter_2d(signal: np.ndarray, fs: int, freq: int = 50) -> np.ndarray:
-    """_summary_
 
-    Args:
-        signal (np.ndarray): _description_
-        fs (int): _description_
-        freq (int, optional): _description_. Defaults to 50.
-
-    Returns:
-        np.ndarray: _description_
+def detrend_baseline_correct_1d(
+    signal: np.ndarray, duration: float, fs: int
+) -> np.ndarray:
     """
-
-    signal = np.asarray(signal)
-    assert signal.ndim == 2, f"Expected 2D signal array, got {signal.ndim}D"
-
-    out = np.empty(signal.shape, dtype=np.float32)
-
-    for ch in range(signal.shape[1]):
-        out[:, ch] = notch_filter_1d(signal[:, ch], fs, freq)
-
-    return out
-
-
-def detrend_baseline_correct_1d(signal: np.ndarray, duration: float, fs: int) -> np.ndarray:
-    """_summary_
+    Detrend signal and correct basline.
 
     Args:
-        signal (np.ndarray): _description_
-        duration (float): _description_
-        fs (int): _description_
+        signal (np.ndarray): ECG signal in this case.
+        duration (float): Duration for baseline correction
+        fs (int): Sampling rate of the signal
 
     Returns:
-        np.ndarray: _description_
+        np.ndarray: corrected signal
     """
 
     signal = np.asarray(signal)
@@ -113,34 +65,21 @@ def detrend_baseline_correct_1d(signal: np.ndarray, duration: float, fs: int) ->
 
     return signal_corrected.astype(np.float32)
 
-def detrend_baseline_correct_2d(signal: np.ndarray, duration: float, fs: int) -> np.ndarray:
-    """_summary_
-
-    Args:
-        signal (np.ndarray): _description_
-        duration (float): _description_
-        fs (int): _description_
-
-    Returns:
-        np.ndarray: _description_
-    """
-
-    signal = np.asarray(signal)
-    assert signal.ndim == 2, f"Expected 2D signal array, got {signal.ndim}D"
-
-    out = np.empty(signal.shape, dtype=np.float32)
-
-    for ch in range(signal.shape[1]):
-        out[:, ch] = detrend_baseline_correct_1d(signal[:, ch], duration, fs)
-
-    return out
 
 # -------------------------------------------------------  use cases --------------------------------------------------------------------------
-def get_preprocessed_signal(raw_sig:np.ndarray, fs:int, bandpass_window:list):
-    processed_sig = notch_filter_1d(
-    bandpass_1d(raw_sig, fs=fs, low=bandpass_window[0], high=bandpass_window[1]),
-    fs=fs,
-    freq=50,
-)
-    return processed_sig
+def get_preprocessed_signal(raw_sig: np.ndarray, fs: int, bandpass_window: list):
+    """
+    Return a signal that is band pass filtered, detrended and baseline corrected.
 
+    Args:
+        raw_sig (np.ndarray): -
+        fs (int):-
+        bandpass_window (list): -
+
+    """
+    processed_sig = notch_filter_1d(
+        bandpass_1d(raw_sig, fs=fs, low=bandpass_window[0], high=bandpass_window[1]),
+        fs=fs,
+        freq=50,
+    )
+    return processed_sig

@@ -6,19 +6,16 @@ from pathlib import Path
 
 
 
-
-
 def get_participant_ids(raw_data_path: str | Path) -> list[str]:
-    """_summary_
+    """
+    Get all participant ids using raw data path.
 
     Args:
-        raw_data_path (str | Path): _description_
+        raw_data_path (str | Path): Path for raw data.
 
-    Raises:
-        ValueError: _description_
 
     Returns:
-        list[str]: _description_
+        list[str]: list of participant ids
     """
     raw_data_path = Path(raw_data_path)
 
@@ -33,16 +30,18 @@ def get_participant_ids(raw_data_path: str | Path) -> list[str]:
     return ids
     
     
-def load_raw_participant_data(raw_data_path: str, participant_id: str):
-    """_summary_
+def load_raw_participant_data(raw_data_path: str, participant_id: str)-> tuple[np.ndarray, ...]:
+    """
+    Load ecg signal for a participant using the wfdb library.
 
     Args:
-        raw_data_path (str): _description_
-        participant_id (str): _description_
+        raw_data_path (str): -
+        participant_id (str): -
 
     Returns:
-        _type_: _description_
+        tuple[np.ndarray, int,np.ndarray, list, list]: raw ecg signal, sampling freq, channel names, r_peaks and labels for beats.
     """
+
     record_path = Path(raw_data_path) / participant_id
 
     record = wfdb.rdrecord(str(record_path))

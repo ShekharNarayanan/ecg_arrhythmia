@@ -5,13 +5,7 @@ from scipy.signal import find_peaks
 
 
 def derivative_1d(signal: np.ndarray) -> np.ndarray:
-    """_summary_
-
-    Args:
-        signal (np.ndarray): _description_
-
-    Returns:
-        np.ndarray: _description_
+    """ Take derivative of the signal.
     """
     assert signal.ndim == 1, "Expected 1D signal array"
 
@@ -20,13 +14,7 @@ def derivative_1d(signal: np.ndarray) -> np.ndarray:
 
 
 def square_1d(signal: np.ndarray) -> np.ndarray:
-    """_summary_
-
-    Args:
-        signal (np.ndarray): _description_
-
-    Returns:
-        np.ndarray: _description_
+    """Compute the square of the given signal.
     """
     assert signal.ndim == 1, "Expected 1D signal array"
 
@@ -35,13 +23,13 @@ def square_1d(signal: np.ndarray) -> np.ndarray:
 
 
 def moving_average_1d(signal: np.ndarray, window_size_s: float, fs: int) -> np.ndarray:
-    """_summary_
+    """
+    Take moving average of the input signal.
 
     Args:
-        signal (np.ndarray): _description_
-        window_size_s (float): _description_
-        fs (int): _description_
-
+        signal (np.ndarray): -
+        window_size_s (float): Window for moving avg
+        fs (int): Sampling freq
     Returns:
         np.ndarray: _description_
     """
@@ -53,14 +41,15 @@ def moving_average_1d(signal: np.ndarray, window_size_s: float, fs: int) -> np.n
 
 
 def extract_r_peaks(signal: np.ndarray, fs: int) -> np.ndarray:
-    """_summary_
+    """
+    Extract R peaks from ECG signal. Use the Pan-tompkins algorithm.
 
     Args:
-        signal (np.ndarray): _description_
-        fs (int): _description_
+        signal (np.ndarray): -
+        fs (int): Sampling frequency
 
     Returns:
-        np.ndarray: _description_
+        np.ndarray: array with peaks 
     """
     filtered_signal = preprocess.bandpass_1d(signal, fs=fs, low=5.0, high=15.0)
     derivative = derivative_1d(filtered_signal)
@@ -129,15 +118,16 @@ def calibrate_r_peaks(
 
 
 def validate_detected_peaks(annotated:np.ndarray, detected:np.ndarray, fs:int, tol_ms:float=30) -> tuple[int,int,int]:
-    """_summary_
+    """
+    Validate detected peaks using the annotations originally from the recording.
 
     Args:
-        annotated (np.ndarray): _description_
-        detected (np.ndarray): _description_
+        annotated (np.ndarray): annotated peaks
+        detected (np.ndarray): detected peaks
         tol (int): tolerance for detection in samples
 
     Returns:
-        tuple[int,int,int]: _description_
+        tuple[int,int,int]: return true pos, false pos and false neg
     """
     # main thing to focus on is to find the correct index from annotated to compare the detected peak to.
     # TRUE POSITIVES: Detected peaks that match with annotated peaks within tolerance
