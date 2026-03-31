@@ -31,7 +31,7 @@ def moving_average_1d(signal: np.ndarray, window_size_s: float, fs: int) -> np.n
         window_size_s (float): Window for moving avg
         fs (int): Sampling freq
     Returns:
-        np.ndarray: _description_
+        np.ndarray: Moving average of the signal.
     """
     assert signal.ndim == 1, "Expected 1D signal array"
 
@@ -76,16 +76,14 @@ def calibrate_r_peaks(
     For each candidate peak index, search within ±search_radius_ms
     and move the peak to the true local maximum of the signal.
 
-    Parameters
-    ----------
-    signal : 1D ECG signal
-    candidate_peaks : array of rough R-peak indices
-    fs : sampling frequency (Hz)
-    search_radius_ms : search window radius in milliseconds
+    Args:
+        signal (np.ndarray): 1D ECG signal.
+        candidate_peaks (np.ndarray): Array of rough R-peak indices.
+        fs (int): Sampling frequency (Hz).
+        search_radius_ms (float): Search window radius in milliseconds.
 
-    Returns
-    -------
-    refined_peaks : array of corrected R-peak indices
+    Returns:
+        np.ndarray: Array of corrected R-peak indices.
     """
 
     assert signal.ndim == 1, "Signal must be 1D"
@@ -124,7 +122,7 @@ def validate_detected_peaks(annotated:np.ndarray, detected:np.ndarray, fs:int, t
     Args:
         annotated (np.ndarray): annotated peaks
         detected (np.ndarray): detected peaks
-        tol (int): tolerance for detection in samples
+        tol_ms (float): tolerance for detection in milliseconds
 
     Returns:
         tuple[int,int,int]: return true pos, false pos and false neg
@@ -178,6 +176,3 @@ def validate_detected_peaks(annotated:np.ndarray, detected:np.ndarray, fs:int, t
     false_neg = len(missed[~missed])
 
     return true_pos, false_pos, false_neg
-
-
-

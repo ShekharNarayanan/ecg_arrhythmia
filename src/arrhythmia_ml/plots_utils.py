@@ -10,16 +10,16 @@ def plot_ecg_segment(signal: np.ndarray,fs: int,
     show_annotations: bool = False,
     label: str = "ECG",
 ) :
-    """_summary_
+    """Plot a segment of a 1D ECG signal.
 
     Args:
-        signal (np.ndarray): _description_
-        fs (int): _description_
-        start_s (float, optional): _description_. Defaults to 0.0.
-        duration_s (float, optional): _description_. Defaults to 5.0.
-        r_peaks (np.ndarray | None, optional): _description_. Defaults to None.
-        show_annotations (bool, optional): _description_. Defaults to False.
-        label (str, optional): _description_. Defaults to "ECG".
+        signal (np.ndarray): 1D ECG signal.
+        fs (int): Sampling frequency.
+        start_s (float, optional): Start time in seconds. Defaults to 0.0.
+        duration_s (float, optional): Duration of segment to plot in seconds. Defaults to 5.0.
+        r_peaks (np.ndarray | None, optional): R-peak indices to overlay on the plot. Defaults to None.
+        show_annotations (bool, optional): Whether to plot R-peak markers. Defaults to False.
+        label (str, optional): Legend label for the signal. Defaults to "ECG".
     """
 
     assert signal.ndim == 1, "Signal must be 1D"
@@ -39,11 +39,12 @@ def plot_ecg_segment(signal: np.ndarray,fs: int,
 
 
 def plot_qrs_complex(X_waveforms:np.ndarray, fs:int, pid:int=0):
-    """_summary_
+    """Plot a single QRS complex waveform for a given participant index.
 
     Args:
-        X_waveforms (np.ndarray): _description_
-        fs (int): _description_
+        X_waveforms (np.ndarray): Feature matrix containing waveforms of all beats.
+        fs (int): Sampling frequency.
+        pid (int, optional): Beat index to plot. Defaults to 0.
     """
 
     t = np.arange(X_waveforms.shape[1]) / fs
@@ -53,10 +54,3 @@ def plot_qrs_complex(X_waveforms:np.ndarray, fs:int, pid:int=0):
     plt.title(f"QRS Complex Participant {pid}")
     plt.xlabel("time (ms)")
     plt.ylabel("mV")
-
-
-
-
-
-    
-

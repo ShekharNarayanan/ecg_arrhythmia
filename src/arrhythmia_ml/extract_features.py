@@ -100,7 +100,7 @@ def pre_and_post_rr_ratio(pre_rr: np.ndarray, post_rr: np.ndarray) -> np.ndarray
         post_rr (np.ndarray): vector of pr_rr intervals for all beats.
 
     Returns:
-        np.ndarray: _description_
+        np.ndarray: Element-wise ratio of pre_rr to post_rr intervals.
     """
 
     return pre_rr / post_rr
@@ -328,7 +328,6 @@ def return_commbined_feature_matrix(
     Args:
         ecg_signal (np.ndarray): -_
         r_peaks (np.ndarray): -
-        labels (list): labels of beats
         fs (int): sampling freq of the ecg signal
         window_start_ms (float): Left bound for waveform extraction. Also used along qrs_extraction window.
         window_end_ms (float): Right bound for waveform extraction.
@@ -384,4 +383,3 @@ def return_commbined_feature_matrix(
 
 if __name__ == '__main__':
     pass
-

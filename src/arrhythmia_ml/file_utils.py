@@ -54,4 +54,3 @@ def load_raw_participant_data(raw_data_path: str, participant_id: str)-> tuple[n
     labels = list(annotation.symbol)                       # type: ignore[attr-defined]
 
     return signal, fs, channels, r_peaks, labels
-

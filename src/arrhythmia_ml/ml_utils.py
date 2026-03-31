@@ -72,6 +72,9 @@ def save_test_data(X_test: np.ndarray, y_test: np.ndarray, y_train: np.ndarray):
 
 def save_label_encoding(label_encoding):
     """Save label encoding to go from beat type to integers. Needed to work with XGBOOST etc. Used in train.py
+
+    Args:
+        label_encoding: Fitted LabelEncoder instance to save as an MLflow artifact.
     """
     with tempfile.TemporaryDirectory() as tmp:
         le_path = os.path.join(tmp, "label_encoder.joblib")
@@ -80,6 +83,12 @@ def save_label_encoding(label_encoding):
 
 def load_test_data(run_id: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Load test data based on run id. Used in eval.py
+
+    Args:
+        run_id (str): MLflow run ID.
+
+    Returns:
+        tuple[np.ndarray, np.ndarray, np.ndarray]: X_test, y_test, y_train arrays.
     """
     client = mlflow.tracking.MlflowClient()
     artifacts_path = client.download_artifacts(run_id, "test_data")
@@ -96,6 +105,12 @@ def load_label_encoder(run_id: str):
 
 def load_model(run_id: str):
     """Load model based on run id from mlflow.
+
+    Args:
+        run_id (str): MLflow run ID.
+
+    Returns:
+        Pipeline: Fitted sklearn pipeline loaded from MLflow.
     """
     return mlflow.sklearn.load_model(f"runs:/{run_id}/model")
 

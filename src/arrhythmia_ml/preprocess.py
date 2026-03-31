@@ -10,8 +10,14 @@ def bandpass_1d(
     """
     Bandpass filter for 1d signal. Takes in a low pass and highpass limit.
 
+    Args:
+        signal (np.ndarray): 1D signal to filter.
+        fs (int): Sampling frequency.
+        low (float): Low cutoff frequency in Hz. Defaults to 0.5.
+        high (float): High cutoff frequency in Hz. Defaults to 30.0.
+
     Returns:
-    band pass filtered signal
+        np.ndarray: Band pass filtered signal.
     """
     assert signal.ndim == 1, "Expected 1D signal array"
 
