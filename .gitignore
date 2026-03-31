@@ -32,6 +32,7 @@ data/mlflow_exported
 literature
 models
 features
+mlruns
 
 # Allow empty dirs to exist
 !data/raw/.gitkeep

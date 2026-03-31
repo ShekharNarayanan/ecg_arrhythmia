@@ -2,6 +2,7 @@
 import numpy as np
 import pywt
 
+
 # --------------------------------- waveform features -----------------------------------------------------------------------------------------------
 def extract_waveforms(
     ecg_signal: np.ndarray,
@@ -17,7 +18,7 @@ def extract_waveforms(
         ecg_signal (np.ndarray): -
         fs (int): sampling frequency of the signal.
         r_peaks (np.ndarray): r peaks in the signal
-        window_start_ms (float): left bound for waveform extraction. 
+        window_start_ms (float): left bound for waveform extraction.
         window_end_ms (float): right bound for waveform extraction.
     Returns:
         np.ndarray: feature matrix with all the waveforms in the ecg signal.
@@ -56,6 +57,7 @@ def extract_waveforms(
 
     return X
 
+
 # --------------------------------- RR features -----------------------------------------------------------------------------------------------
 def compute_pre_post_delta_rr(
     r_peaks: np.ndarray,
@@ -76,7 +78,9 @@ def compute_pre_post_delta_rr(
 
     # get acceleration of rhythm
     delta_rr = np.diff(peak_intervals)
-    delta_rr = np.pad(delta_rr, pad_width=1, mode="edge") # pad it so length becomes the same as num beats
+    delta_rr = np.pad(
+        delta_rr, pad_width=1, mode="edge"
+    )  # pad it so length becomes the same as num beats
 
     # loop over r_peaks and store pre and post interval durations
     for p_ind in range(len(r_peaks)):
@@ -155,7 +159,10 @@ def compute_deviation_from_local_mean(
 
     return np.array([pre_i / mean_i for pre_i, mean_i in zip(pre_rr, local_rr_mean)])
 
-def compute_rr_irregularity(r_peaks:np.ndarray,rr_irregularity_window:int)->np.ndarray:
+
+def compute_rr_irregularity(
+    r_peaks: np.ndarray, rr_irregularity_window: int
+) -> np.ndarray:
     """
     Compute irregularity in peak intervals using a given window.
 
@@ -171,21 +178,24 @@ def compute_rr_irregularity(r_peaks:np.ndarray,rr_irregularity_window:int)->np.n
 
     for p_ind in range(len(r_peaks)):
         # decide left and right side of window based on peaks
-        left = max(0, p_ind  - rr_irregularity_window)
+        left = max(0, p_ind - rr_irregularity_window)
         right = min(len(peak_intervals), p_ind + rr_irregularity_window)
 
         # find relevant peaks in the window and take mean/std
         relevant_peaks = peak_intervals[left:right]
-        mean = np.mean(relevant_peaks )
-        std  = np.std(relevant_peaks )
-        # append value of irregularity 
-        rr_irreg[p_ind] = std / mean if mean !=0 else 0
+        mean = np.mean(relevant_peaks)
+        std = np.std(relevant_peaks)
+        # append value of irregularity
+        rr_irreg[p_ind] = std / mean if mean != 0 else 0
 
     return np.array(rr_irreg)
 
 
 def extract_all_rr_features(
-    r_peaks: np.ndarray, local_rr_mean_beat_window: int, rr_irregularity_window:int
+    r_peaks: np.ndarray,
+    local_rr_mean_beat_window: int,
+    rr_irregularity_window: int,
+    include_rr_irregularity: bool = True,
 ) -> dict:
     """
     Extracts all the peak interval features in one place.
@@ -216,20 +226,31 @@ def extract_all_rr_features(
     )
 
     # get rr irregularity
-    rr_irreg = compute_rr_irregularity(r_peaks=r_peaks, rr_irregularity_window=rr_irregularity_window)
+    if include_rr_irregularity:
+        rr_irreg = compute_rr_irregularity(
+            r_peaks=r_peaks, rr_irregularity_window=rr_irregularity_window
+        )
+    else:
+        rr_irreg = []
 
     return {
-    "pre_rr": pre_rr,
-    "post_rr": post_rr,
-    "delta_rr": delta_rr,
-    "pre_post_rr_ratio": pre_post_rr_ratio,
-    "local_rr_mean": local_rr_mean,
-    "deviation_rr": deviation_rr,
-    "rr_irreg": rr_irreg
+        "pre_rr": pre_rr,
+        "post_rr": post_rr,
+        "delta_rr": delta_rr,
+        "pre_post_rr_ratio": pre_post_rr_ratio,
+        "local_rr_mean": local_rr_mean,
+        "deviation_rr": deviation_rr,
+        "rr_irreg": rr_irreg,
     }
 
+
 # --------------------------------- QRS features -----------------------------------------------------------------------------------------------
-def extract_all_qrs_features(X_wfms:np.ndarray, window_start_ms:float, qrs_extraction_window:list[int], fs:int)->dict:
+def extract_all_qrs_features(
+    X_wfms: np.ndarray,
+    window_start_ms: float,
+    qrs_extraction_window: list[int],
+    fs: int,
+) -> dict:
     """
     Extracts qrs features. Computes the following:
     1. q-r interval
@@ -246,54 +267,64 @@ def extract_all_qrs_features(X_wfms:np.ndarray, window_start_ms:float, qrs_extra
     Returns:
         dict: Dict with all the features.
     """
-    
+
     # convert window in ms to samples
-    q_window = int((qrs_extraction_window[0] * fs)/ 1000)
-    s_window = int((qrs_extraction_window[1] * fs)/ 1000)
+    q_window = int((qrs_extraction_window[0] * fs) / 1000)
+    s_window = int((qrs_extraction_window[1] * fs) / 1000)
     wfm_window_start = int((window_start_ms * fs) / 1000)
 
-    assert (s_window - q_window) < X_wfms.shape[1], 'Extraction window longer than waveform limits'
-    
+    assert (s_window - q_window) < X_wfms.shape[1], (
+        "Extraction window longer than waveform limits"
+    )
+
     # define all output vectors
-    q_r_intervals = np.full((X_wfms.shape[0],),np.nan) # intervals between q and r onsets
-    r_s_intervals = np.full((X_wfms.shape[0],),np.nan)  # intervals between r and s onsets
+    q_r_intervals = np.full(
+        (X_wfms.shape[0],), np.nan
+    )  # intervals between q and r onsets
+    r_s_intervals = np.full(
+        (X_wfms.shape[0],), np.nan
+    )  # intervals between r and s onsets
 
-    q_r_amps = np.full((X_wfms.shape[0],),np.nan) # voltage difference between q and r onsets
-    r_s_amps = np.full((X_wfms.shape[0],),np.nan)  # voltage difference between r and s onsets
-
+    q_r_amps = np.full(
+        (X_wfms.shape[0],), np.nan
+    )  # voltage difference between q and r onsets
+    r_s_amps = np.full(
+        (X_wfms.shape[0],), np.nan
+    )  # voltage difference between r and s onsets
 
     # loop through all waves
-    r_peak_ind = wfm_window_start 
+    r_peak_ind = wfm_window_start
     for wfm_ind in range(X_wfms.shape[0]):
-        
         # get waveform and peak index
-        wfm = X_wfms[wfm_ind,:]
+        wfm = X_wfms[wfm_ind, :]
 
         # calculate offsets for indices as np.argmin gives a relative index, make sure they are within bounds of wfm
         q_start = max(0, r_peak_ind + q_window)
         s_end = min(len(wfm), r_peak_ind + s_window)
 
-        q_timestamp = int(q_start + np.argmin(wfm[q_start: r_peak_ind]))
-        s_timestamp = int(r_peak_ind + np.argmin(wfm[r_peak_ind: s_end]))
+        q_timestamp = int(q_start + np.argmin(wfm[q_start:r_peak_ind]))
+        s_timestamp = int(r_peak_ind + np.argmin(wfm[r_peak_ind:s_end]))
 
         # get time interval info between q r and s
         q_r_intervals[wfm_ind] = abs(r_peak_ind - q_timestamp)
-        r_s_intervals[wfm_ind] =  abs(r_peak_ind - s_timestamp)  
+        r_s_intervals[wfm_ind] = abs(r_peak_ind - s_timestamp)
 
         # get amplitude difference info for each event
         q_r_amps[wfm_ind] = abs(wfm[q_timestamp] - wfm[r_peak_ind])
-        r_s_amps[wfm_ind] = abs(wfm[r_peak_ind] - wfm[s_timestamp] )
-        
-    return {'q_r_intervals': q_r_intervals,
-            'r_s_intervals': r_s_intervals,
-            'q_r_amps': q_r_amps,
-            'r_s_amps': r_s_amps
+        r_s_amps[wfm_ind] = abs(wfm[r_peak_ind] - wfm[s_timestamp])
 
+    return {
+        "q_r_intervals": q_r_intervals,
+        "r_s_intervals": r_s_intervals,
+        "q_r_amps": q_r_amps,
+        "r_s_amps": r_s_amps,
     }
 
 
 # --------------------------------- wavelet features -----------------------------------------------------------------------------------------------
-def extract_wavelet_features(X_waveforms:np.ndarray,wavelet_decomp_level:int=4)->np.ndarray:
+def extract_wavelet_features(
+    X_waveforms: np.ndarray, wavelet_decomp_level: int = 4
+) -> np.ndarray:
     """
     Extracts fast freq components using wavelet decomposition/ transform.
     Args:
@@ -302,13 +333,18 @@ def extract_wavelet_features(X_waveforms:np.ndarray,wavelet_decomp_level:int=4)-
     Returns:
         np.ndarray: wavelet coefficients of waveforms.
     """
-    
+
     wavelet_coeff = []
     for wfm_ind in range(X_waveforms.shape[0]):
-        coeffs = pywt.wavedec(data=X_waveforms[wfm_ind,:], wavelet='db2',level=wavelet_decomp_level)  # get amplitudes for fast and slow freq components for each wave
-        wavelet_coeff.append(np.concatenate(coeffs[1:])) # append only the fast freq component/ amps at each level
+        coeffs = pywt.wavedec(
+            data=X_waveforms[wfm_ind, :], wavelet="db2", level=wavelet_decomp_level
+        )  # get amplitudes for fast and slow freq components for each wave
+        wavelet_coeff.append(
+            np.concatenate(coeffs[1:])
+        )  # append only the fast freq component/ amps at each level
 
     return np.array(wavelet_coeff)
+
 
 # --------------------------------- combine features -----------------------------------------------------------------------------------------------
 def return_commbined_feature_matrix(
@@ -317,11 +353,12 @@ def return_commbined_feature_matrix(
     fs: int,
     window_start_ms: float,
     window_end_ms: float,
-    local_rr_beat_window: int=5,
+    local_rr_beat_window: int = 5,
     qrs_extraction_window: list[int] | None = None,
+    include_rr_irregularity: bool = True,
     rr_irregularity_window: int = 64,
-    wavelet_decomp_level:int =4,
-    compute_only: list[str] | None = None
+    wavelet_decomp_level: int = 4,
+    compute_only: list[str] | None = None,
 ) -> tuple[np.ndarray | None, ...]:
     """Combines all extracted features and returns them as output.
 
@@ -342,9 +379,12 @@ def return_commbined_feature_matrix(
         tuple[np.ndarray | None, np.ndarray | None]: Feature matrix containing features of choice
     """
     if compute_only is None:
-        compute_only = ["waves","interval_related","QRS"] # set of features to be computed if no list is given
+        compute_only = [
+            "waves",
+            "interval_related",
+            "QRS",
+        ]  # set of features to be computed if no list is given
 
-    
     if "waves" in compute_only:
         # get all extracted waveforms for participant
         X_waves = extract_waveforms(
@@ -359,27 +399,45 @@ def return_commbined_feature_matrix(
 
     if "interval_related" in compute_only:
         # get r_peak interval related features and corresponding feature vector
-        rr_dict = extract_all_rr_features(r_peaks=r_peaks,local_rr_mean_beat_window=local_rr_beat_window,rr_irregularity_window=rr_irregularity_window)
-        X_rr = np.column_stack(list(rr_dict.values()))
+        rr_dict = extract_all_rr_features(
+            r_peaks=r_peaks,
+            local_rr_mean_beat_window=local_rr_beat_window,
+            rr_irregularity_window=rr_irregularity_window,
+            include_rr_irregularity=include_rr_irregularity,
+        )
+        X_rr = np.column_stack(
+            list(v for v in rr_dict.values() if len(v) != 0)
+        )  # check if rr_irreg feature has to be added based on bool
     else:
         X_rr = None
 
     if "QRS" in compute_only:
-        assert X_waves is not None, 'X_waves is None so QRS features cannot be computed. Change features in config to include waves and try again'
-        assert qrs_extraction_window is not None, 'qrs_extraction_window must be provided when computing QRS features'
-        qrs_dict = extract_all_qrs_features(X_wfms=X_waves,window_start_ms=window_start_ms, qrs_extraction_window=qrs_extraction_window, fs=fs)
+        assert X_waves is not None, (
+            "X_waves is None so QRS features cannot be computed. Change features in config to include waves and try again"
+        )
+        assert qrs_extraction_window is not None, (
+            "qrs_extraction_window must be provided when computing QRS features"
+        )
+        qrs_dict = extract_all_qrs_features(
+            X_wfms=X_waves,
+            window_start_ms=window_start_ms,
+            qrs_extraction_window=qrs_extraction_window,
+            fs=fs,
+        )
         X_qrs = np.column_stack(list(qrs_dict.values()))
     else:
         X_qrs = None
 
-    if 'wavelet' in compute_only:
-        assert X_waves is not None, 'X_waves is None so wavelet features cannot be computed. Change features in config to include waves and try again' 
-        X_wavelet = extract_wavelet_features(X_waves,wavelet_decomp_level)
+    if "wavelet" in compute_only:
+        assert X_waves is not None, (
+            "X_waves is None so wavelet features cannot be computed. Change features in config to include waves and try again"
+        )
+        X_wavelet = extract_wavelet_features(X_waves, wavelet_decomp_level)
     else:
         X_wavelet = None
-    
 
     return X_waves, X_rr, X_qrs, X_wavelet
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pass

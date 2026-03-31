@@ -2,7 +2,7 @@
 
 # ── paths ────────────────────────────────────────────────────────────────────
 raw_data_path : 'data/raw'
-mlflow_exported: 'data\mlflow_exported'
+mlflow_exported: 'data/mlflow_exported'
 
 # MLflow tracking URI — 'mlruns' folder will be created here locally.
 # Change to a remote URI (e.g. http://localhost:5000) if you run a tracking server.
@@ -39,7 +39,7 @@ keep_labels: ['N', 'A', 'V']
 # Each experiment has:
 #   run_name          : label shown in the MLflow UI
 #   features          : list of feature groups to compute
-#                       options -> "waves", "interval_related", "QRS" (waves is a strict requirement for computing QRS features)
+#                       options -> "waves", "interval_related", "QRS" (waves is a strict requirement for computing QRS features), "wavelet", "rr_irregularity
 #   classifier        : which model to use
 #                       options -> "logreg", "gboost"
 #   oversample        : whether you want to use SMOTE oversampling. beefs up training time.
@@ -140,6 +140,7 @@ experiments:
     features          : ['waves','interval_related','QRS']
     classifier        : 'xgboost'
     oversample        : False
+    include_rr_irregularity: True
     classifier_params : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
     description       : 'Waves, RR interval features, RR irregularity, QRS, xtra gradient boosting, sample weight balanced'
 

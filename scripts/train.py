@@ -39,6 +39,9 @@ def main(exp_name: str):
     wavelet_decomp_level      = config["wavelet_decomp_level"]
     keep_labels               = np.array(config["keep_labels"])
 
+    # check if rr_irregularity is included in classifier params as True
+    include_rr_irregularity   = classifier_params.get('include_rr_irregularity',True)
+
     # model/ training params
     cv_split_param    =  config["cv_split_param"]
     n_iter_random_search = config["n_iter_random_search"]
@@ -55,6 +58,7 @@ def main(exp_name: str):
         wave_extraction_window=wave_extraction_window,
         local_rr_mean_beat_window=local_rr_mean_beat_window,
         rr_irregularity_window=rr_irregularity_window,
+        include_rr_irregularity=include_rr_irregularity,
         wavelet_decomp_level=wavelet_decomp_level,
         compute_only=compute_only,
         keep_labels=keep_labels,
