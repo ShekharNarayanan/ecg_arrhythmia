@@ -106,9 +106,9 @@ experiments:
     classifier_params       : {max_iter: 2000, solver: 'saga', verbose: true}
     description             : 'Waveforms + RR + QRS + wavelet, logistic regression'
 
-  exp07_waves_rr_no_irreg_QRS_logreg:
-    run_name                : 'exp07_waves_rr_no_irreg_QRS_logreg'
-    features                : ['waves', 'interval_related', 'QRS']
+  exp07_waves_rr_no_irreg_QRS_wavelet_logreg:
+    run_name                : 'exp07_waves_rr_no_irreg_QRS_wavelet_logreg'
+    features                : ['waves', 'interval_related', 'QRS', 'wavelet']
     classifier              : 'logreg'
     oversample              : False
     include_rr_irregularity : False
@@ -177,9 +177,9 @@ experiments:
     classifier_params       : {n_estimators: 100, colsample_bylevel: 0.7, tree_method: 'hist', device: 'cpu'}
     description             : 'Waveforms + RR (no irregularity) + QRS + wavelet, xgboost'
 
-  exp14_waves_rr_no_irreg_QRS_xgboost:
-    run_name                : 'exp14_waves_rr_no_irreg_QRS_xgboost'
-    features                : ['waves', 'interval_related', 'QRS']
+  exp14_waves_rr_no_irreg_QRS_wavelet_xgboost:
+    run_name                : 'exp14_waves_rr_no_irreg_QRS_wavelet_xgboost'
+    features                : ['waves', 'interval_related', 'QRS', 'wavelet']
     classifier              : 'xgboost'
     oversample              : False
     include_rr_irregularity : False

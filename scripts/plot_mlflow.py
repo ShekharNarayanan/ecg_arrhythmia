@@ -11,7 +11,8 @@ with open(Path(__file__).resolve().parents[1] / "config.yaml", "r") as file:
 mlflow_export_path = config["mlflow_exported"]
 
 # load data
-macro_f1_csv = pd.read_csv(f"{mlflow_export_path}/macro_f1.csv")
+type = 'comparison'
+macro_f1_csv = pd.read_csv(f"{mlflow_export_path}/macro_f1_{type}.csv")
 
 # macro f1 bar charts
 model_names = macro_f1_csv["Run"]
