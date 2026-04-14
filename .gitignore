@@ -36,7 +36,7 @@ mlruns
 
 # Allow empty dirs to exist
 !data/raw/.gitkeep
-!data/processed/.gitkeep
+!data/mflow_exported/.gitkeep
 
 # --------------------
 # Media / generated outputs
