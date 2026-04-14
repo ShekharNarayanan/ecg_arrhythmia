@@ -74,12 +74,12 @@ Current insight: Added rr irregularity features, no improvement. The best combin
 
 2. Clone the repository
 ```bash
-git clone https://github.com/ShekharNarayanan/ecg_arrhythmia.git
+git clone https://github.com/ShekharNarayanan/arrhythmia_ml.git
 ```
 
 3. Navigate to the repository:
 ```bash
-cd ecg_arrhythmia
+cd arrhythmia_ml
 ```
 
 4. Install the dependencies of the environment
@@ -108,4 +108,4 @@ mlflow ui
 ```
 
 ## Contact
-For any questions, you can contact me on linkedin (my github profile has a direct link to my linkedin). 
+For any questions, you can contact me on [linkedin](https://www.linkedin.com/in/shekharnarayanan/).
