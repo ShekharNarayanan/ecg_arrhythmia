@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="pdoc 16.0.0"/>
+    <title>config API documentation</title>
+
+    <style>/*! * Bootstrap Reboot v5.0.0 */*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#fff;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}h4{font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){h4{font-size:1.5rem}}h5{font-size:1.25rem}h6{font-size:1rem}p{margin-top:0;margin-bottom:1rem}ol,ul{padding-left:2rem}dl,ol,ul{margin-top:0;margin-bottom:1rem}ol ol,ol ul,ul ol,ul ul{margin-bottom:0}dt{font-weight:700}dd{margin-bottom:.5rem;margin-left:0}b,strong{font-weight:bolder}small{font-size:.875em}code,kbd,pre,samp{font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:1em;direction:ltr}pre{display:block;margin-top:0;margin-bottom:1rem;overflow:auto;font-size:.875em}pre code{font-size:inherit;color:inherit;word-break:normal}code{font-size:.875em;color:#d63384;word-wrap:break-word}a{color:#0d6efd;text-decoration:underline}a:hover{color:#0a58ca}table{caption-side:bottom;border-collapse:collapse}th{text-align:inherit;text-align:-webkit-match-parent}tbody,td,tfoot,th,thead,tr{border-color:inherit;border-style:solid;border-width:0}button{border-radius:0}[hidden]{display:none!important}</style>
+    <style>/*! syntax-highlighting.css */pre{line-height:125%;}.pdoc-code{background:#f8f8f8;}.pdoc-code .c{color:#3D7B7B;font-style:italic}.pdoc-code .k{color:#008000;font-weight:bold}.pdoc-code .s{color:#BA2121}.pdoc-code .s2{color:#BA2121}.pdoc-code .mi{color:#666666}.pdoc-code .mf{color:#666666}</style>
+    <style>/*! theme.css */:root{--pdoc-background:#fff;}.pdoc{--text:#212529;--muted:#6c757d;--link:#3660a5;--link-hover:#1659c5;--code:#f8f8f8;--active:#fff598;--accent:#eee;--accent2:#c1c1c1;--nav-hover:rgba(255, 255, 255, 0.5);--name:#0066BB;--def:#008800;--annotation:#007020;}</style>
+    <style>/*! layout.css */html, body{width:100%;height:100%;}html, main{scroll-behavior:smooth;}body{background-color:var(--pdoc-background);}@media (max-width:769px){#navtoggle{cursor:pointer;position:absolute;width:50px;height:40px;top:1rem;right:1rem;border-color:var(--text);color:var(--text);display:flex;opacity:0.8;z-index:999;}#navtoggle:hover{opacity:1;}#togglestate + div{display:none;}#togglestate:checked + div{display:inherit;}main, header{padding:2rem 3vw;}header + main{margin-top:-3rem;}.git-button{display:none !important;}nav input[type="search"]{max-width:77%;}nav input[type="search"]:first-child{margin-top:-6px;}nav input[type="search"]:valid ~ *{display:none !important;}}@media (min-width:770px){:root{--sidebar-width:clamp(12.5rem, 28vw, 22rem);}nav{position:fixed;overflow:auto;height:100vh;width:var(--sidebar-width);}main, header{padding:3rem 2rem 3rem calc(var(--sidebar-width) + 3rem);width:calc(54rem + var(--sidebar-width));max-width:100%;}header + main{margin-top:-4rem;}#navtoggle{display:none;}}#togglestate{position:absolute;height:0;opacity:0;}nav.pdoc{--pad:clamp(0.5rem, 2vw, 1.75rem);--indent:1.5rem;background-color:var(--accent);border-right:1px solid var(--accent2);box-shadow:0 0 20px rgba(50, 50, 50, .2) inset;padding:0 0 0 var(--pad);overflow-wrap:anywhere;scrollbar-width:thin;scrollbar-color:var(--accent2) transparent;z-index:1}nav.pdoc::-webkit-scrollbar{width:.4rem;}nav.pdoc::-webkit-scrollbar-thumb{background-color:var(--accent2);}nav.pdoc > div{padding:var(--pad) 0;}nav.pdoc .module-list-button{display:inline-flex;align-items:center;color:var(--text);border-color:var(--muted);margin-bottom:1rem;}nav.pdoc .module-list-button:hover{border-color:var(--text);}nav.pdoc input[type=search]{display:block;outline-offset:0;width:calc(100% - var(--pad));}nav.pdoc ul{list-style:none;padding-left:0;}nav.pdoc > div > ul{margin-left:calc(0px - var(--pad));}nav.pdoc li a{padding:.2rem 0 .2rem calc(var(--pad) + var(--indent));}nav.pdoc > div > ul > li > a{padding-left:var(--pad);}nav.pdoc li{transition:all 100ms;}nav.pdoc li:hover{background-color:var(--nav-hover);}nav.pdoc a,nav.pdoc a:hover{color:var(--text);}nav.pdoc a{display:block;}nav.pdoc > h2:first-of-type{margin-top:1.5rem;}nav.pdoc footer:before{content:"";display:block;width:calc(100% - var(--pad));border-top:solid var(--accent2) 1px;margin-top:1.5rem;padding-top:.5rem;}nav.pdoc footer{font-size:small;}</style>
+    <style>/*! content.css */.pdoc{color:var(--text);box-sizing:border-box;line-height:1.5;background:none;}.pdoc .pdoc-button{cursor:pointer;display:inline-block;border:solid black 1px;border-radius:2px;font-size:.75rem;padding:calc(0.5em - 1px) 1em;transition:100ms all;}.pdoc .visually-hidden{position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;margin:-1px !important;overflow:hidden !important;clip:rect(0,0,0,0) !important;white-space:nowrap !important;border:0 !important;}.pdoc h1,.pdoc h2,.pdoc h3{font-weight:300;margin:.3em 0;padding:.2em 0;}.pdoc > section:not(.module-info) h1{font-size:1.5rem;font-weight:500;}.pdoc > section:not(.module-info) h2{font-size:1.4rem;font-weight:500;}.pdoc > section:not(.module-info) h3{font-size:1.3rem;font-weight:500;}.pdoc a{text-decoration:none;color:var(--link);}.pdoc a:hover{color:var(--link-hover);}.pdoc blockquote{margin-left:2rem;}.pdoc pre{border-top:1px solid var(--accent2);border-bottom:1px solid var(--accent2);margin-top:0;margin-bottom:1em;padding:.5rem 0 .5rem .5rem;overflow-x:auto;background-color:var(--code);}.pdoc code{color:var(--text);padding:.2em .4em;margin:0;font-size:85%;background-color:var(--accent);border-radius:6px;}.pdoc a > code{color:inherit;}.pdoc pre > code{display:inline-block;font-size:inherit;background:none;border:none;padding:0;}.pdoc > section:not(.module-info){margin-bottom:1.5rem;}.pdoc .modulename{margin-top:0;font-weight:bold;}.pdoc .modulename a{color:var(--link);transition:100ms all;}.pdoc .docstring{margin-bottom:1.5rem;}.pdoc section:not(.module-info) .docstring{margin-left:clamp(0rem, 5vw - 2rem, 1rem);}.pdoc h1:target,.pdoc h2:target,.pdoc h3:target,.pdoc h4:target,.pdoc h5:target,.pdoc h6:target{background-color:var(--active);box-shadow:-1rem 0 0 0 var(--active);}.pdoc div:target > .attr,.pdoc section:target > .attr{background-color:var(--active);}.pdoc *{scroll-margin:2rem;}.pdoc .attr:hover{filter:contrast(0.95);}.pdoc section,.pdoc .classattr{position:relative;}.pdoc .headerlink{--width:clamp(1rem, 3vw, 2rem);position:absolute;top:0;left:calc(0rem - var(--width));transition:all 100ms ease-in-out;opacity:0;}.pdoc .headerlink::before{content:"#";display:block;text-align:center;width:var(--width);height:2.3rem;line-height:2.3rem;font-size:1.5rem;}.pdoc .attr:hover ~ .headerlink,.pdoc *:target > .headerlink,.pdoc .headerlink:hover{opacity:1;}.pdoc .attr{display:block;margin:.5rem 0 .5rem;padding:.4rem .4rem .4rem 1rem;background-color:var(--accent);overflow-x:auto;}.pdoc .name{color:var(--name);font-weight:bold;}.pdoc .def{color:var(--def);font-weight:bold;}.pdoc .annotation{color:var(--annotation);}.pdoc .attribution{margin-top:2rem;display:block;opacity:0.5;transition:all 200ms;filter:grayscale(100%);}.pdoc .attribution:hover{opacity:1;filter:grayscale(0%);}.pdoc .attribution img{margin-left:5px;height:27px;vertical-align:bottom;width:50px;transition:all 200ms;}.pdoc table{display:block;width:max-content;max-width:100%;overflow:auto;margin-bottom:1rem;}.pdoc table th{font-weight:600;}.pdoc table th,.pdoc table td{padding:6px 13px;border:1px solid var(--accent2);}</style>
+    <style>/*! custom.css */</style>
+</head>
+<body>
+    <nav class="pdoc">
+        <label id="navtoggle" for="togglestate" class="pdoc-button"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg></label>
+        <input id="togglestate" type="checkbox" aria-hidden="true" tabindex="-1">
+        <div>
+            <a class="pdoc-button module-list-button" href="arrhythmia_ml.html">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
+  <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+</svg>                &nbsp;arrhythmia_ml</a>
+
+            <h2>Config Sections</h2>
+            <ul class="memberlist">
+                <li><a href="#paths">paths</a></li>
+                <li><a href="#signal_processing">signal_processing</a></li>
+                <li><a href="#feature_extraction">feature_extraction</a></li>
+                <li><a href="#model_training">model_training</a></li>
+                <li><a href="#label_filtering">label_filtering</a></li>
+                <li><a href="#experiments">experiments</a></li>
+            </ul>
+
+        <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev" target="_blank">
+            built with <span class="visually-hidden">pdoc</span><img
+                alt="pdoc logo"
+                src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22pdoc%20logo%22%20width%3D%22300%22%20height%3D%22160%22%20viewBox%3D%220%200%20150%2080%22%3E%3Ctitle%3Epdoc%3C/title%3E%3Cpath%20d%3D%22M132.316%2048.886c.276-4.679%202.342-6.698%204.409-7.982s4.27-1.165%206.751-1.055c1.586.07%203.044.156%204.222-.482%201.142-.619%202.026-1.932%202.162-3.739.268-3.576-1.929-5.368-5.006-5.551s-7.599.524-10.517%201.606c-4.455%201.652-8.588%206.606-9.552%208.992s-2.342%206.193-1.745%2010.873%202.664%209.221%205.878%2011.79%205.878%203.808%2010.103%204.312%203.444.229%206.062.229%205.006-2.202%204.914-4.909-2.296-5.001-4.501-4.863-3.077.505-5.281.229-7.715-2.064-7.899-9.451z%22%20fill%3D%22%23198754%22/%3E%3Ccircle%20cx%3D%22101.504%22%20cy%3D%2248.943%22%20r%3D%2214.208%22%20fill%3D%22none%22%20stroke%3D%22%23198754%22%20stroke-width%3D%229.354%22/%3E%3Cpath%20d%3D%22M87.81.002c-3.637.065-5.001.454-7.014%201.232s-3.443%201.363-6.3%204.282c-1.723%201.76-3.148%205.019-3.776%207.329-.413%201.521-.316%202.63-.316%202.63l-.195%2034.612c.065%205.774-6.755%208.305-9.612%208.37s-9.678-1.038-9.743-9.408%207.128-9.521%208.362-9.521c1.413-.13%202.526-.021%203.718-.016%202.071.009%204.157-.778%204.092-4.671s-4.157-4.736-4.157-4.736c-6.3-.843-11.43%202.206-11.43%202.206S40.917%2038.15%2041.372%2049.634%2051.568%2068.19%2061.311%2068.125s18.316-7.007%2018.445-17.193l.13-22.772c.046-2.291%202.683-3.644%204.476-4.203.745-.232%201.694-.274%201.694-.274l10.457-.13s4.871-.324%207.729-3.114%204.352-6.294%204.352-6.294.974-3.049.13-4.606-.195-1.233-2.792-3.309-8.573-4.477-8.573-4.477S91.447-.063%2087.81.002zM0%2047.169l.065%2028.417S0%2080.127%204.481%2079.997s5.072-3.866%205.049-4.152l-.113-28.482s1.624-7.656%209.937-7.721%2010.002%206.942%2010.002%208.499-.909%2010.51-9.093%2010.51c-.948%200-2.99-.567-4.145-.272-3.919%201-3.194%204.554-3.194%204.554s.065%205.061%207.404%204.996%2018.575-6.034%2018.575-19.074S26.953%2030.04%2019.549%2029.91%201.234%2035.296%200%2047.169z%22%20fill%3D%22%23198754%22/%3E%3C/svg%3E"/>
+        </a>
+</div>
+    </nav>
+    <main class="pdoc">
+        <section class="module-info">
+            <h1 class="modulename">config.yaml</h1>
+            <div class="docstring">
+                <p>Central configuration file for the arrhythmia beat classification pipeline.
+                Loaded at runtime by <code>train.py</code>, <code>eval.py</code>, and shared utilities via <code>ml_utils.py</code>.
+                All paths, signal processing parameters, feature extraction settings, training hyperparameters,
+                and experiment definitions live here so that no magic numbers appear in code.</p>
+            </div>
+        </section>
+
+        <!-- ── paths ──────────────────────────────────────────────────── -->
+        <section id="paths">
+            <div class="attr">
+                <a class="headerlink" href="#paths">#</a>
+                <span class="def">section</span> <span class="name">paths</span>
+            </div>
+            <div class="docstring">
+                <p>Filesystem and MLflow tracking locations used across the pipeline.</p>
+                <table>
+                    <thead><tr><th>Key</th><th>Default</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><code>raw_data_path</code></td>
+                            <td><code>'data/raw'</code></td>
+                            <td>Directory containing the raw MIT-BIH <code>.dat</code> / <code>.hea</code> / <code>.atr</code> recording files.</td>
+                        </tr>
+                        <tr>
+                            <td><code>mlflow_exported</code></td>
+                            <td><code>'data/mlflow_exported'</code></td>
+                            <td>Output directory for any manually exported MLflow artifacts (e.g. CSV run summaries).</td>
+                        </tr>
+                        <tr>
+                            <td><code>mlflow_tracking_uri</code></td>
+                            <td><code>'mlruns'</code></td>
+                            <td>MLflow backend store URI. Set to <code>'sqlite:///mlflow.db'</code> for cross-OS compatibility when moving the project between Mac and Windows.</td>
+                        </tr>
+                        <tr>
+                            <td><code>mlflow_experiment_name</code></td>
+                            <td><code>'arrhythmia_beat_classification'</code></td>
+                            <td>Logical experiment group name shown in the MLflow UI. All runs from the ablation are logged under this name.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── signal_processing ──────────────────────────────────────── -->
+        <section id="signal_processing">
+            <div class="attr">
+                <a class="headerlink" href="#signal_processing">#</a>
+                <span class="def">section</span> <span class="name">signal_processing</span>
+            </div>
+            <div class="docstring">
+                <p>Bandpass and notch filter parameters applied during preprocessing (<code>preprocess.py</code>) and beat segmentation (<code>beats.py</code>).</p>
+                <table>
+                    <thead><tr><th>Key</th><th>Default</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><code>general_bandpass</code></td>
+                            <td><code>[0.5, 30.0]</code></td>
+                            <td>Butterworth bandpass cutoffs (Hz) applied to the full ECG recording. Removes baseline wander below 0.5 Hz and high-frequency noise above 30 Hz.</td>
+                        </tr>
+                        <tr>
+                            <td><code>notch</code></td>
+                            <td><code>50</code></td>
+                            <td>Notch filter frequency (Hz) to suppress power-line interference. Use <code>60</code> for North American recordings.</td>
+                        </tr>
+                        <tr>
+                            <td><code>beats_bandpass</code></td>
+                            <td><code>[1, 15]</code></td>
+                            <td>Tighter bandpass applied to individual beat segments before waveform feature extraction. Emphasises QRS content and attenuates T-wave and baseline drift.</td>
+                        </tr>
+                        <tr>
+                            <td><code>peak_calibration</code></td>
+                            <td><code>80</code></td>
+                            <td>Half-window in milliseconds used to align algorithmically detected R-peaks with the MIT-BIH annotation file. The detected peak is snapped to the annotated location if it falls within this window.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── feature_extraction ─────────────────────────────────────── -->
+        <section id="feature_extraction">
+            <div class="attr">
+                <a class="headerlink" href="#feature_extraction">#</a>
+                <span class="def">section</span> <span class="name">feature_extraction</span>
+            </div>
+            <div class="docstring">
+                <p>Controls how waveform segments, RR-interval features, QRS morphology features, and wavelet coefficients are computed in <code>extract_features.py</code>.</p>
+                <table>
+                    <thead><tr><th>Key</th><th>Default</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><code>wfm_extraction_window</code></td>
+                            <td><code>[-200, 400]</code></td>
+                            <td>Time window in milliseconds relative to the R-peak used to cut out a beat waveform. <code>-200</code> captures the P-wave onset; <code>400</code> covers the T-wave tail. Converted to samples internally using the recording's sampling frequency.</td>
+                        </tr>
+                        <tr>
+                            <td><code>local_rr_mean_beat_window</code></td>
+                            <td><code>5</code></td>
+                            <td>Number of preceding beats used to compute the local RR mean for a given beat. This mean is used to derive <code>deviation_rr</code> (current RR minus local mean) as one of the interval-related features.</td>
+                        </tr>
+                        <tr>
+                            <td><code>qrs_extraction_window</code></td>
+                            <td><code>[-200, 60]</code></td>
+                            <td>Search window in milliseconds relative to the R-peak for locating the Q trough (left side) and S trough (right side). Q is searched in the 200 ms before the R-peak; S is searched in the 60 ms after.</td>
+                        </tr>
+                        <tr>
+                            <td><code>wavelet_decomp_level</code></td>
+                            <td><code>4</code></td>
+                            <td>Number of decomposition levels for the discrete wavelet transform (DWT) using PyWavelets (<code>db2</code> wavelet). Detail coefficients from all levels are concatenated into a single feature vector. Note: in ablation experiments, wavelet features were found to hurt performance, likely due to noise introduced by concatenating across levels.</td>
+                        </tr>
+                        <tr>
+                            <td><code>rr_irregularity_window</code></td>
+                            <td><code>64</code></td>
+                            <td>Number of beats on each side of the current beat used to compute the RR coefficient of variation (<code>rr_irreg</code>). A larger window produces a smoother irregularity estimate. Controlled per-experiment via <code>include_rr_irregularity</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── model_training ─────────────────────────────────────────── -->
+        <section id="model_training">
+            <div class="attr">
+                <a class="headerlink" href="#model_training">#</a>
+                <span class="def">section</span> <span class="name">model_training</span>
+            </div>
+            <div class="docstring">
+                <p>Global training parameters shared across all experiments. Individual experiments can override classifier-specific hyperparameters via their <code>classifier_params</code> block.</p>
+                <table>
+                    <thead><tr><th>Key</th><th>Default</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><code>max_iter</code></td>
+                            <td><code>2000</code></td>
+                            <td>Maximum solver iterations for logistic regression. Passed to <code>LogisticRegression(max_iter=...)</code>. Has no effect on XGBoost experiments.</td>
+                        </tr>
+                        <tr>
+                            <td><code>cv_split_param</code></td>
+                            <td><code>5</code></td>
+                            <td>Number of folds for cross-validation (e.g. <code>StratifiedKFold</code> or <code>GroupKFold</code> when patient-wise splitting is used). Also controls the <code>cv</code> argument in <code>RandomizedSearchCV</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>n_iter_random_search</code></td>
+                            <td><code>30</code></td>
+                            <td>Number of parameter combinations sampled during <code>RandomizedSearchCV</code> hyperparameter tuning. Only relevant for experiments that include a <code>search_CV_params</code> block.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── label_filtering ────────────────────────────────────────── -->
+        <section id="label_filtering">
+            <div class="attr">
+                <a class="headerlink" href="#label_filtering">#</a>
+                <span class="def">section</span> <span class="name">label_filtering</span>
+            </div>
+            <div class="docstring">
+                <p>Determines which beat classes are retained from the MIT-BIH annotations before feature extraction and model training.</p>
+                <table>
+                    <thead><tr><th>Key</th><th>Default</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><code>keep_labels</code></td>
+                            <td><code>['N', 'A', 'V']</code></td>
+                            <td>List of AAMI beat-type symbols to retain. <code>N</code> = Normal, <code>A</code> = Atrial premature beat, <code>V</code> = Ventricular premature beat. All other annotation types are discarded. Class imbalance is handled at training time via <code>class_weight="balanced"</code> rather than oversampling.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── experiments ────────────────────────────────────────────── -->
+        <section id="experiments">
+            <div class="attr">
+                <a class="headerlink" href="#experiments">#</a>
+                <span class="def">section</span> <span class="name">experiments</span>
+            </div>
+            <div class="docstring">
+                <p>Defines the full ablation suite. Each top-level key (e.g. <code>exp01_waves_logreg</code>) is a named experiment that <code>train.py</code> iterates over. The config drives a feature group ablation across two classifiers — logistic regression and XGBoost — following the progression:</p>
+                <blockquote><code>waves only → waves + RR → waves + RR + QRS → waves + RR + QRS + wavelet</code></blockquote>
+                <p>Each experiment entry supports the following keys:</p>
+                <table>
+                    <thead><tr><th>Key</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><code>run_name</code></td>
+                            <td><code>str</code></td>
+                            <td>Label shown in the MLflow UI for this run. Typically matches the experiment key name.</td>
+                        </tr>
+                        <tr>
+                            <td><code>features</code></td>
+                            <td><code>list[str]</code></td>
+                            <td>Ordered list of feature groups to include. Valid values: <code>'waves'</code>, <code>'interval_related'</code>, <code>'QRS'</code>, <code>'wavelet'</code>. Note: <code>'waves'</code> is required when <code>'QRS'</code> or <code>'wavelet'</code> are included, as they depend on the waveform extraction window.</td>
+                        </tr>
+                        <tr>
+                            <td><code>classifier</code></td>
+                            <td><code>str</code></td>
+                            <td>Classifier to use. One of <code>'logreg'</code> (logistic regression via scikit-learn) or <code>'xgboost'</code> (gradient boosting via XGBoost). The pipeline is built inside <code>ml_utils.build_pipeline()</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>oversample</code></td>
+                            <td><code>bool</code></td>
+                            <td>Whether to apply SMOTE oversampling. Kept in the schema for reference; set to <code>False</code> across all ablation runs — SMOTE was found to degrade performance and was replaced by <code>class_weight="balanced"</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>include_rr_irregularity</code></td>
+                            <td><code>bool</code></td>
+                            <td>Whether to append the <code>rr_irreg</code> coefficient-of-variation feature to the interval-related feature group. Only has an effect when <code>'interval_related'</code> is listed in <code>features</code>. In XGBoost ablation experiments, toggling this flag produced identical results — likely because <code>rr_irreg</code> is redundant with <code>delta_rr</code> and <code>deviation_rr</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>classifier_params</code></td>
+                            <td><code>dict</code></td>
+                            <td>Hyperparameters passed directly to <code>build_pipeline()</code>. For <code>logreg</code>: <code>max_iter</code>, <code>solver</code>, <code>verbose</code>. For <code>xgboost</code>: <code>n_estimators</code>, <code>colsample_bylevel</code>, <code>tree_method</code>, <code>device</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>search_CV_params</code></td>
+                            <td><code>dict</code> (optional)</td>
+                            <td>Parameter grid for <code>RandomizedSearchCV</code>. Keys must be prefixed with <code>clf__</code> to target the classifier step in the pipeline (e.g. <code>clf__n_estimators</code>). Omit this key to run a fixed-parameter experiment.</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td><code>str</code></td>
+                            <td>Free-text note logged as an MLflow tag. Used to annotate what each experiment tests in the ablation story.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Experiment index</h3>
+                <p>The 14 active experiments (exp01–exp14) cover the full cross of feature groups × classifiers × RR irregularity flag:</p>
+                <table>
+                    <thead><tr><th>ID</th><th>Classifier</th><th>Features</th><th>rr_irreg</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>exp01</code></td><td>logreg</td><td>waves</td><td>✓</td></tr>
+                        <tr><td><code>exp02</code></td><td>logreg</td><td>waves + RR</td><td>✓</td></tr>
+                        <tr><td><code>exp03</code></td><td>logreg</td><td>waves + RR</td><td>✗</td></tr>
+                        <tr><td><code>exp04</code></td><td>logreg</td><td>waves + RR + QRS</td><td>✓</td></tr>
+                        <tr><td><code>exp05</code></td><td>logreg</td><td>waves + RR + QRS</td><td>✗</td></tr>
+                        <tr><td><code>exp06</code></td><td>logreg</td><td>waves + RR + QRS + wavelet</td><td>✓</td></tr>
+                        <tr><td><code>exp07</code></td><td>logreg</td><td>waves + RR + QRS + wavelet</td><td>✗</td></tr>
+                        <tr><td><code>exp08</code></td><td>xgboost</td><td>waves</td><td>✓</td></tr>
+                        <tr><td><code>exp09</code></td><td>xgboost</td><td>waves + RR</td><td>✓</td></tr>
+                        <tr><td><code>exp10</code></td><td>xgboost</td><td>waves + RR</td><td>✗</td></tr>
+                        <tr><td><code>exp11</code></td><td>xgboost</td><td>waves + RR + QRS</td><td>✓</td></tr>
+                        <tr><td><code>exp12</code></td><td>xgboost</td><td>waves + RR + QRS</td><td>✗</td></tr>
+                        <tr><td><code>exp13</code></td><td>xgboost</td><td>waves + RR + QRS + wavelet</td><td>✓</td></tr>
+                        <tr><td><code>exp14</code></td><td>xgboost</td><td>waves + RR + QRS + wavelet</td><td>✗</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>
