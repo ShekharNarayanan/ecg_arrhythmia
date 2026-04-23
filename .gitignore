@@ -30,11 +30,13 @@ data/raw/
 data/processed/
 data/mlflow_exported
 literature
-models
-features
+feature_plots/*
+peak_detection_plots/*
 mlruns
 
 # Allow empty dirs to exist
+!feature_plots/.gitkeep
+!peak_detection_plots/.gitkeep
 !data/raw/.gitkeep
 !data/mflow_exported/.gitkeep
 

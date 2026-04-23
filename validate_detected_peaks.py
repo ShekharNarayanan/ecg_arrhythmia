@@ -1,13 +1,16 @@
-from arrhythmia_ml import plots_utils
+from arrhythmia_ml import file_utils, preprocess, beats, plots_utils
+import matplotlib
+matplotlib.use("Agg") # no gui backend
+from matplotlib import pyplot as plt
+from pathlib import Path
+import yaml
 
 
-def main():
-    from arrhythmia_ml import file_utils, preprocess, beats
-    from matplotlib import pyplot as plt
-    import numpy as np
+if __name__ == "__main__":
 
-    # LOAD PARTICIPANT DATA
-    config = file_utils.load_config()
+    # ----------------------------------------------------- load config params --------------------------------------------------------------------------
+    with open(Path.cwd() / "config.yaml", "r") as file:
+        config = yaml.safe_load(file)
     raw_data_path = config["raw_data_path"]
     participant_ids = file_utils.get_participant_ids(raw_data_path=raw_data_path)
     test_id = participant_ids[0]
@@ -18,12 +21,15 @@ def main():
     )
 
     # DISPLAY STATS
+    print("#"*100)
+    print("Annotated data stats:")
     print(f"Participant ID: {test_id}")
     print(f"Signal shape: {signal.shape}")
     print(f"Sampling frequency: {fs} Hz")
     print(f"Channels: {channels}")
     print(f"Number of peaks: {len(r_peaks)}")
     print(f"Beat types: {set(labels)}")
+    print("#"*100)
 
     # DECIDE WHICH CHANNEL TO PLOT
     chan_to_plot = 1  # MLII lead
@@ -37,18 +43,24 @@ def main():
     extracted_r_peaks = beats.extract_r_peaks(bpf_notch_signal, fs=fs)
 
     # CALIBRATE R PEAKS
-    refined_r_peaks = beats.calibrate_r_peaks(
+    calibrated_r_peaks = beats.calibrate_r_peaks(
         bpf_notch_signal, extracted_r_peaks, fs=fs, search_radius_ms=80.0
     )
 
     # VALIDATE EXTRACTED R PEAKS WITH ANNOTATED ONES
     tolerance_ms = 30.0
     true_pos, false_pos, false_neg = beats.validate_detected_peaks(
-        annotated=r_peaks, detected=refined_r_peaks, fs=fs, tol_ms=tolerance_ms
+        annotated=r_peaks, detected=calibrated_r_peaks, fs=fs, tol_ms=tolerance_ms
     )
     # COMPUTE RECALL AND PRECISION
     recall = true_pos / (true_pos + false_neg) if (true_pos + false_neg) > 0 else 0.0
     precision = true_pos / (true_pos + false_pos) if (true_pos + false_pos) > 0 else 0.0
+    print("#"*100)
+    print("detected data stats:")
+    print("num detected peaks",len(calibrated_r_peaks))
+    print("recall for detected peaks", recall)
+    print("precision for detected peaks", precision)
+    print("#"*100)
 
     # PLOT RAW AND FILTERED SIGNALS
     fig, axes = plt.subplots(2, 1, figsize=(14, 7), sharex=True)
@@ -86,7 +98,7 @@ def main():
         fs=fs,
         start_s=0,
         duration_s=5,
-        r_peaks=refined_r_peaks,
+        r_peaks=calibrated_r_peaks,
         label=f"filtered {channels[chan_to_plot]}",
         show_annotations=True,
     )
@@ -101,8 +113,4 @@ def main():
     axes[1].grid(alpha=0.25)
 
     fig.tight_layout()
-    plt.show()
-
-
-if __name__ == "__main__":
-    main()
+    plt.savefig("peak_detection_plots/peak_detection.png")

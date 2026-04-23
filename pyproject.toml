@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
+
+
 dependencies = [
     "matplotlib==3.10.8",
     "mlflow==3.10.0",
@@ -128,4 +130,13 @@ dependencies = [
     "yarl==1.22.0",
     "zipp==3.23.0",
     "pdoc>=16.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "hatchling>=1.29.0",
 ]
