@@ -68,9 +68,12 @@ Current insight: Added rr irregularity features, no improvement. The best combin
 
 ## Setup
 
+
+
 1. Install the following before going further:
     1. Git
     2. uv
+    3. raw data from [here](https://physionet.org/content/mitdb/1.0.0/) and extract it to data/raw.
 
 2. Clone the repository
 ```bash
