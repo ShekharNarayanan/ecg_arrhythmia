@@ -84,7 +84,7 @@ docker pull theopensourceguy/arrhythmia_ml
 ```
 3. Download the raw data from [PhysioNet](https://physionet.org/content/mitdb/1.0.0/) and extract it into `./data/raw` in whatever folder you'll be running commands from
 
-That's it — see [Using Docker](#using-docker) for how to run scripts.
+That's it. See [Using Docker](#using-docker) for how to run scripts.
 
 ---
 
