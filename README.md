@@ -118,6 +118,8 @@ uv sync
 
 > Always run Docker commands from the same directory. Your data should be in `./data/raw` and MLflow runs will be saved to `./mlruns` in that directory.
 
+**NOTE: Experiment names are specified in `config.yaml`**
+
 **Train a model:**
 ```bash
 docker run -v ./data:/app/data -v ./mlruns:/app/mlruns theopensourceguy/arrhythmia_ml uv run python -m scripts.train --exp <exp_name>
