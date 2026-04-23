@@ -102,7 +102,6 @@ dependencies = [
     "pywavelets==1.9.0",
     "pyyaml==6.0.3",
     "pyzmq==27.1.0",
-    "requests==2.32.5",
     "rsa==4.9.1",
     "seaborn==0.13.2",
     "six==1.17.0",
